@@ -1,0 +1,466 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ═══════════════════════════════════════════════════════════════
+   AFTERIMAGE V2 — Design System Tokens
+   Per design.md Section 3: Centralized CSS custom properties
+   ═══════════════════════════════════════════════════════════════ */
+
+:root {
+  color-scheme: light;
+
+  /* Core palette — design.md Section 3 */
+  --color-ink: #151515;
+  --color-paper: #F2EFE8;
+  --color-white: #FFFFFF;
+  --color-signal-red: #FF593D;
+  --color-acid-lime: #D7FF3F;
+  --color-electric-blue: #2457FF;
+  --color-muted: #77766F;
+  --color-rule: #C8C5BD;
+  --color-rule-dark: #393939;
+  --color-error: #B42318;
+  --color-success: #176B45;
+
+  /* Semantic aliases */
+  --color-text: var(--color-ink);
+  --color-text-muted: var(--color-muted);
+  --color-page: var(--color-paper);
+  --color-surface: var(--color-white);
+  --color-border: var(--color-rule);
+  --color-focus: var(--color-electric-blue);
+
+  /* Typography — design.md Section 4 */
+  --font-display: "Space Grotesk", "Arial", sans-serif;
+  --font-body: "Inter", "Helvetica Neue", sans-serif;
+  --font-mono: "IBM Plex Mono", "SFMono-Regular", Consolas, monospace;
+
+  /* Motion tokens — motion.md Section 2 */
+  --motion-instant: 100ms;
+  --motion-fast: 140ms;
+  --motion-standard: 180ms;
+  --motion-panel: 260ms;
+  --motion-reveal: 520ms;
+
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-enter: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-exit: cubic-bezier(0.4, 0, 1, 1);
+  --ease-linear: linear;
+
+  /* Spacing scale */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-24: 96px;
+
+  /* Layout — design.md Section 3 / layout.md */
+  --page-gutter: clamp(16px, 3vw, 44px);
+  --content-max: 1440px;
+  --rule-width: 1px;
+  --corner-sharp: 0px;
+
+  /* Hero display type — design.md Section 4 */
+  --hero-display-size: clamp(2.4rem, 8.5vw, 8.5rem);
+  --hero-line-height: 0.94;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Base reset
+   ═══════════════════════════════════════════════════════════════ */
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  height: 6px;
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-paper);
+  border-top: 1px solid var(--color-rule);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-rule);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-muted);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   HERO CHOREOGRAPHY KEYFRAMES
+   motion.md Section 3: Coordinated entrance sequence
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Headline clipped reveal: slide up from below a clip boundary */
+@keyframes heroClipReveal {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+    clip-path: inset(100% 0 0 0);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+/* General entrance: opacity + small rise */
+@keyframes heroEntrance {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Artwork reveal: opacity + subtle 8px rise */
+@keyframes artworkReveal {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Swatch entrance: subtle pop */
+@keyframes swatchEntrance {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Modal entrance */
+@keyframes modalEnter {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   HERO ENTRANCE CHOREOGRAPHY CLASSES
+   motion.md Section 3: Staggered editorial reveal
+   Headline → Support → CTA → Artwork → Swatches
+   Total sequence ~800ms
+   ═══════════════════════════════════════════════════════════════ */
+
+.animate-hero-eyebrow {
+  animation: heroEntrance 400ms var(--ease-enter) 0ms both;
+}
+
+.animate-hero-headline-1 {
+  animation: heroClipReveal var(--motion-reveal) var(--ease-enter) 60ms both;
+}
+
+.animate-hero-headline-2 {
+  animation: heroClipReveal var(--motion-reveal) var(--ease-enter) 130ms both;
+}
+
+.animate-hero-support {
+  animation: heroEntrance 440ms var(--ease-enter) 200ms both;
+}
+
+.animate-hero-actions {
+  animation: heroEntrance 400ms var(--ease-enter) 260ms both;
+}
+
+.animate-hero-privacy {
+  animation: heroEntrance 360ms var(--ease-enter) 320ms both;
+}
+
+.animate-hero-artwork {
+  animation: artworkReveal 480ms var(--ease-enter) 100ms both;
+}
+
+.animate-swatch-entrance {
+  animation: swatchEntrance var(--motion-standard) var(--ease-enter) both;
+}
+
+.animate-modal-enter {
+  animation: modalEnter var(--motion-standard) var(--ease-enter) both;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   3D PERSPECTIVE & DEPTH SYSTEM
+   design.md Section 6, motion.md Section 4
+   ═══════════════════════════════════════════════════════════════ */
+
+.hero-perspective-wrap {
+  perspective: 1100px;
+  perspective-origin: 50% 45%;
+}
+
+.hero-specimen {
+  transform-style: preserve-3d;
+  will-change: transform;
+  transition: transform var(--motion-panel) var(--ease-enter);
+}
+
+/* Base specimen board */
+.specimen-layer-base {
+  transform-style: preserve-3d;
+  transform: translateZ(0px);
+}
+
+/* Layer 1: Source Image Plane */
+.specimen-layer-image {
+  transform-style: preserve-3d;
+  transform: translateZ(24px) translate(calc(var(--tilt-x, 0) * -3px), calc(var(--tilt-y, 0) * -3px));
+  box-shadow: 0 8px 24px -6px rgba(21, 21, 21, 0.14);
+  transition: transform 80ms linear, box-shadow var(--motion-panel) var(--ease-enter);
+}
+
+/* Layer 2: Primary Extracted Color Plate (Overlapping lower right) */
+.specimen-layer-primary {
+  transform-style: preserve-3d;
+  transform: translateZ(44px) translate(calc(var(--tilt-x, 0) * 5px), calc(var(--tilt-y, 0) * 5px));
+  box-shadow: 0 14px 28px -6px rgba(21, 21, 21, 0.20), 0 4px 10px -2px rgba(21, 21, 21, 0.08);
+  transition: transform 80ms linear, box-shadow var(--motion-panel) var(--ease-enter);
+}
+
+/* Layer 3: Secondary Accent Color Plate */
+.specimen-layer-accent {
+  transform-style: preserve-3d;
+  transform: translateZ(62px) translate(calc(var(--tilt-x, 0) * 9px), calc(var(--tilt-y, 0) * 9px)) rotate(1deg);
+  box-shadow: 0 18px 36px -8px rgba(21, 21, 21, 0.24), 0 6px 14px -3px rgba(21, 21, 21, 0.10);
+  transition: transform 80ms linear, box-shadow var(--motion-panel) var(--ease-enter);
+}
+
+/* Individual depth layers for parallax strips */
+.specimen-layer-strip-1 {
+  transform-style: preserve-3d;
+  transform: translateZ(36px) rotate(-1.5deg) translate(calc(var(--tilt-x, 0) * 3px), calc(var(--tilt-y, 0) * 3px));
+  box-shadow: 0 8px 18px -4px rgba(21, 21, 21, 0.15);
+  transition: transform 80ms linear;
+}
+
+.specimen-layer-strip-2 {
+  transform-style: preserve-3d;
+  transform: translateZ(48px) rotate(1deg) translate(calc(var(--tilt-x, 0) * 6px), calc(var(--tilt-y, 0) * 6px));
+  box-shadow: 0 10px 22px -4px rgba(21, 21, 21, 0.18);
+  transition: transform 80ms linear;
+}
+
+.specimen-layer-strip-3 {
+  transform-style: preserve-3d;
+  transform: translateZ(58px) rotate(-0.5deg) translate(calc(var(--tilt-x, 0) * 8px), calc(var(--tilt-y, 0) * 8px));
+  box-shadow: 0 12px 26px -5px rgba(21, 21, 21, 0.20);
+  transition: transform 80ms linear;
+}
+
+.specimen-layer-label {
+  transform-style: preserve-3d;
+  transform: translateZ(38px);
+  transition: transform 80ms linear;
+}
+
+/* Contact shadows that shift dynamically with tilt */
+.specimen-shadow {
+  box-shadow:
+    0 4px 14px -4px rgba(21, 21, 21, 0.08),
+    0 12px 30px -8px rgba(21, 21, 21, 0.08);
+  transition: box-shadow var(--motion-panel) var(--ease-enter);
+}
+
+.specimen-shadow.is-tilted {
+  box-shadow:
+    0 22px 48px -12px rgba(21, 21, 21, 0.22),
+    0 8px 20px -4px rgba(21, 21, 21, 0.10);
+}
+
+/* Old hero-tilt-card classes preserved for backward compat */
+.hero-tilt-card {
+  transform-style: preserve-3d;
+  will-change: transform, box-shadow;
+  box-shadow: 0 4px 16px -4px rgba(21, 21, 21, 0.08), 0 0 0 1px var(--color-rule);
+  transition: transform var(--motion-panel) var(--ease-enter), box-shadow var(--motion-panel) var(--ease-enter);
+}
+
+.hero-tilt-card.is-tilted {
+  box-shadow: 0 18px 36px -12px rgba(21, 21, 21, 0.18), 0 0 0 1px var(--color-rule);
+}
+
+.depth-layer-base {
+  transform: translateZ(0px);
+}
+
+.depth-layer-header {
+  transform: translateZ(12px);
+}
+
+.depth-layer-image {
+  transform: translateZ(20px);
+  box-shadow: 0 6px 18px -4px rgba(21, 21, 21, 0.12);
+}
+
+.depth-layer-badge {
+  transform: translateZ(32px);
+  box-shadow: 0 4px 10px -2px rgba(21, 21, 21, 0.15);
+}
+
+.depth-layer-swatches {
+  transform: translateZ(26px);
+}
+
+.depth-layer-footer {
+  transform: translateZ(14px);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SCROLL REVEAL
+   motion.md Section 5: Section choreography
+   ═══════════════════════════════════════════════════════════════ */
+
+.scroll-reveal-container {
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity var(--motion-panel) var(--ease-enter), transform var(--motion-panel) var(--ease-enter);
+}
+
+.scroll-reveal-container.is-revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TACTILE UI INTERACTIONS
+   design.md Section 8, motion.md Section 6
+   ═══════════════════════════════════════════════════════════════ */
+
+.tactile-press {
+  transition: transform var(--motion-instant) var(--ease-standard),
+              background-color var(--motion-fast) var(--ease-standard),
+              border-color var(--motion-fast) var(--ease-standard),
+              color var(--motion-fast) var(--ease-standard),
+              box-shadow var(--motion-fast) var(--ease-standard);
+}
+
+.tactile-press:active {
+  transform: translateY(1px);
+}
+
+.tactile-swatch {
+  transition: border-color var(--motion-fast) var(--ease-standard),
+              background-color var(--motion-fast) var(--ease-standard),
+              transform var(--motion-instant) var(--ease-standard),
+              box-shadow var(--motion-fast) var(--ease-standard);
+}
+
+.tactile-swatch:hover {
+  border-color: var(--color-ink);
+}
+
+.tactile-swatch:active {
+  transform: translateY(1px);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   EDITORIAL TYPOGRAPHY HELPERS
+   ═══════════════════════════════════════════════════════════════ */
+
+.hero-display {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--hero-display-size);
+  line-height: var(--hero-line-height);
+  letter-spacing: -0.025em;
+  color: var(--color-ink);
+  overflow-wrap: break-word;
+}
+
+/* Decorative rule accent */
+.editorial-rule {
+  width: 48px;
+  height: 3px;
+  background-color: var(--color-signal-red);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   REDUCED MOTION — motion.md Section 7
+   ═══════════════════════════════════════════════════════════════ */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .animate-hero-eyebrow,
+  .animate-hero-headline-1,
+  .animate-hero-headline-2,
+  .animate-hero-support,
+  .animate-hero-actions,
+  .animate-hero-privacy,
+  .animate-hero-artwork,
+  .animate-swatch-entrance,
+  .animate-modal-enter,
+  .scroll-reveal-container {
+    opacity: 1 !important;
+    transform: none !important;
+    animation: none !important;
+    transition: none !important;
+    clip-path: none !important;
+  }
+
+  .hero-specimen,
+  .hero-tilt-card {
+    transform: none !important;
+    will-change: auto !important;
+  }
+
+  .specimen-layer-base,
+  .specimen-layer-image,
+  .specimen-layer-primary,
+  .specimen-layer-accent,
+  .specimen-layer-strip-1,
+  .specimen-layer-strip-2,
+  .specimen-layer-strip-3,
+  .specimen-layer-label,
+  .depth-layer-base,
+  .depth-layer-header,
+  .depth-layer-image,
+  .depth-layer-badge,
+  .depth-layer-swatches,
+  .depth-layer-footer {
+    transform: none !important;
+  }
+
+  .tactile-press:active,
+  .tactile-swatch:active {
+    transform: none !important;
+  }
+}
