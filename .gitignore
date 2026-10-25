@@ -3,3 +3,10 @@ dist
 dist-ssr
 *.local
 .DS_Store
+
+# Agent and tool environment caches
+.agent/
+.dsh/
+.gemini/
+.impeccable/
+.opencode/

@@ -201,7 +201,7 @@ describe('Component & Interaction Tests', () => {
     expect(screen.getByText(/800 × 600 px/)).toBeInTheDocument();
   });
 
-  it('renders HeroSpecimen with 3D layers, metadata, and handles selection', () => {
+  it('renders HeroSpecimen with artwork, metadata, and handles selection', () => {
     const onSelect = vi.fn();
     const sample = SAMPLE_IMAGES[0];
 
@@ -210,20 +210,12 @@ describe('Component & Interaction Tests', () => {
     // Verify category and specimen label
     expect(screen.getByText(sample.category)).toBeInTheDocument();
     expect(screen.getByText('Color Specimen')).toBeInTheDocument();
-    expect(screen.getByText(`${sample.palette.length} Extracted Tones`)).toBeInTheDocument();
+    expect(screen.getByText(sample.title)).toBeInTheDocument();
 
-    // Verify swatches rendered
-    const swatches = screen.getAllByRole('listitem');
-    expect(swatches.length).toBe(sample.palette.length);
-
-    // Clicking a swatch triggers onSelectSample
-    fireEvent.click(swatches[0]);
+    // Clicking the interactive artwork plane triggers onSelectSample
+    const artworkBtn = screen.getByRole('button', { name: new RegExp(`Open workspace with ${sample.title}`, 'i') });
+    fireEvent.click(artworkBtn);
     expect(onSelect).toHaveBeenCalledWith(sample);
-
-    // Clicking "Edit palette" button triggers onSelectSample
-    const editBtn = screen.getByText('Edit palette →');
-    fireEvent.click(editBtn);
-    expect(onSelect).toHaveBeenCalledTimes(2);
   });
 
   it('renders LandingPage with headline choreography, CTA buttons, and sections', () => {
@@ -250,6 +242,91 @@ describe('Component & Interaction Tests', () => {
     // Check supporting sections are rendered
     expect(screen.getByText(/Three steps to a functional/)).toBeInTheDocument();
     expect(screen.getByText('Tested against diverse imagery.')).toBeInTheDocument();
+  });
+
+  it('renders Section 02 Unified Chromatic Ledger with desktop spectrum and mobile selectable tabs', () => {
+    const onOpenWorkspace = vi.fn();
+    const onSelectSample = vi.fn();
+
+    render(
+      <LandingPage
+        onOpenWorkspace={onOpenWorkspace}
+        onSelectSample={onSelectSample}
+      />
+    );
+
+    // Verify Section 02 heading and standards badge
+    expect(screen.getByText(/§ 02 \/\/ CHROMATIC SPECTRUM SHEET/)).toBeInTheDocument();
+    expect(screen.getAllByText(/WCAG 2.2 AA AUDITED/).length).toBeGreaterThanOrEqual(1);
+
+    // Verify mobile interactive segment buttons exist
+    const mobileTabs = screen.getAllByRole('tab');
+    expect(mobileTabs.length).toBe(6);
+
+    // Select second tab and verify tone detail updates
+    fireEvent.click(mobileTabs[1]);
+    expect(mobileTabs[1]).toHaveAttribute('aria-selected', 'true');
+
+    // Click "Edit tone" button
+    const editBtn = screen.getByRole('button', { name: /Edit tone/i });
+    fireEvent.click(editBtn);
+    expect(onSelectSample).toHaveBeenCalled();
+  });
+
+  it('handles Section 03 actionable workflow stages and Section 04 swatch HEX copying', async () => {
+    const onOpenWorkspace = vi.fn();
+    const onSelectSample = vi.fn();
+    const onNewImage = vi.fn();
+
+    // Mock navigator.clipboard
+    const writeTextMock = vi.fn().mockResolvedValue(undefined);
+    Object.assign(navigator, {
+      clipboard: {
+        writeText: writeTextMock,
+      },
+    });
+
+    render(
+      <LandingPage
+        onOpenWorkspace={onOpenWorkspace}
+        onSelectSample={onSelectSample}
+        onNewImage={onNewImage}
+      />
+    );
+
+    // Test Section 03 Stage 01 action
+    const stage01 = screen.getByRole('button', { name: /Stage 01: Choose an image/i });
+    fireEvent.click(stage01);
+    expect(onNewImage).toHaveBeenCalled();
+
+    // Test Section 03 Stage 02 action
+    const stage02 = screen.getByRole('button', { name: /Stage 02: Refine the palette/i });
+    fireEvent.click(stage02);
+    expect(onSelectSample).toHaveBeenCalled();
+
+    // Test Section 03 Stage 03 action
+    const stage03 = screen.getByRole('button', { name: /Stage 03: Export your colors/i });
+    fireEvent.click(stage03);
+    expect(onSelectSample).toHaveBeenCalledTimes(2);
+
+    // Initial status element is present and empty
+    const statusRegion = screen.getByRole('status');
+    expect(statusRegion).toHaveAttribute('aria-live', 'polite');
+
+    // Test Section 04 swatch 1-click copying
+    const swatchBtn = screen.getByRole('button', { name: /Copy hex code #1E2328/i });
+    fireEvent.click(swatchBtn);
+    expect(writeTextMock).toHaveBeenCalledWith('#1E2328');
+
+    // Confirm feedback state appears
+    expect(screen.getAllByText('COPIED').length).toBeGreaterThanOrEqual(1);
+
+    // Confirm screen-reader polite announcement updates with the copied hex code
+    expect(statusRegion).toHaveTextContent('Copied hex code #1E2328 to clipboard');
+
+    // Confirm Section 05 dispatch ledger displays accurate implemented export formats
+    expect(screen.getByText('CSS • JSON (DTCG)')).toBeInTheDocument();
+    expect(screen.queryByText(/ASE/)).not.toBeInTheDocument();
   });
 
   it('renders Workspace and responds to keyboard shortcuts', () => {

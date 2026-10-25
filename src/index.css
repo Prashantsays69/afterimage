@@ -66,7 +66,7 @@
   --corner-sharp: 0px;
 
   /* Hero display type — design.md Section 4 */
-  --hero-display-size: clamp(2.4rem, 8.5vw, 8.5rem);
+  --hero-display-size: clamp(2.4rem, 5vw, 5.2rem);
   --hero-line-height: 0.94;
 }
 
@@ -216,7 +216,7 @@ body {
    ═══════════════════════════════════════════════════════════════ */
 
 .hero-perspective-wrap {
-  perspective: 1100px;
+  perspective: 1200px;
   perspective-origin: 50% 45%;
 }
 
@@ -226,76 +226,75 @@ body {
   transition: transform var(--motion-panel) var(--ease-enter);
 }
 
-/* Base specimen board */
+/* Base archival specimen mount board */
 .specimen-layer-base {
   transform-style: preserve-3d;
   transform: translateZ(0px);
+  background: linear-gradient(175deg, #FFFFFF 0%, #F9F7F3 100%);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.9), 0 1px 3px rgba(21, 21, 21, 0.04);
 }
 
-/* Layer 1: Source Image Plane */
+/* Layer 1: Source Image Plane — tactile archival mount */
 .specimen-layer-image {
   transform-style: preserve-3d;
-  transform: translateZ(24px) translate(calc(var(--tilt-x, 0) * -3px), calc(var(--tilt-y, 0) * -3px));
-  box-shadow: 0 8px 24px -6px rgba(21, 21, 21, 0.14);
+  transform: translateZ(26px) translate(calc(var(--tilt-x, 0) * -3.5px), calc(var(--tilt-y, 0) * -3.5px));
+  box-shadow: 0 16px 36px -8px rgba(21, 21, 21, 0.22), 0 4px 12px -2px rgba(21, 21, 21, 0.10);
   transition: transform 80ms linear, box-shadow var(--motion-panel) var(--ease-enter);
 }
 
-/* Layer 2: Primary Extracted Color Plate (Overlapping lower right) */
+/* Layer 2: Primary Extracted Color Plate — sculptural thick lacquer slab */
 .specimen-layer-primary {
   transform-style: preserve-3d;
-  transform: translateZ(44px) translate(calc(var(--tilt-x, 0) * 5px), calc(var(--tilt-y, 0) * 5px));
-  box-shadow: 0 14px 28px -6px rgba(21, 21, 21, 0.20), 0 4px 10px -2px rgba(21, 21, 21, 0.08);
+  transform: translateZ(50px) translate(calc(var(--tilt-x, 0) * 7.5px), calc(var(--tilt-y, 0) * 7.5px));
+  box-shadow: 0 20px 42px -10px rgba(21, 21, 21, 0.28), 0 8px 18px -4px rgba(21, 21, 21, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.95);
   transition: transform 80ms linear, box-shadow var(--motion-panel) var(--ease-enter);
 }
 
-/* Layer 3: Secondary Accent Color Plate */
+/* Layer 3: Secondary Accent Color Plate — cantilevered floating chip */
 .specimen-layer-accent {
   transform-style: preserve-3d;
-  transform: translateZ(62px) translate(calc(var(--tilt-x, 0) * 9px), calc(var(--tilt-y, 0) * 9px)) rotate(1deg);
-  box-shadow: 0 18px 36px -8px rgba(21, 21, 21, 0.24), 0 6px 14px -3px rgba(21, 21, 21, 0.10);
+  transform: translateZ(68px) translate(calc(var(--tilt-x, 0) * 11px), calc(var(--tilt-y, 0) * 11px)) rotate(-1.5deg);
+  box-shadow: 0 24px 50px -12px rgba(21, 21, 21, 0.32), 0 10px 22px -5px rgba(21, 21, 21, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.95);
   transition: transform 80ms linear, box-shadow var(--motion-panel) var(--ease-enter);
 }
 
-/* Individual depth layers for parallax strips */
-.specimen-layer-strip-1 {
-  transform-style: preserve-3d;
-  transform: translateZ(36px) rotate(-1.5deg) translate(calc(var(--tilt-x, 0) * 3px), calc(var(--tilt-y, 0) * 3px));
-  box-shadow: 0 8px 18px -4px rgba(21, 21, 21, 0.15);
-  transition: transform 80ms linear;
-}
-
-.specimen-layer-strip-2 {
-  transform-style: preserve-3d;
-  transform: translateZ(48px) rotate(1deg) translate(calc(var(--tilt-x, 0) * 6px), calc(var(--tilt-y, 0) * 6px));
-  box-shadow: 0 10px 22px -4px rgba(21, 21, 21, 0.18);
-  transition: transform 80ms linear;
-}
-
-.specimen-layer-strip-3 {
-  transform-style: preserve-3d;
-  transform: translateZ(58px) rotate(-0.5deg) translate(calc(var(--tilt-x, 0) * 8px), calc(var(--tilt-y, 0) * 8px));
-  box-shadow: 0 12px 26px -5px rgba(21, 21, 21, 0.20);
-  transition: transform 80ms linear;
-}
-
-.specimen-layer-label {
+/* Layer 4: Interactive Calibration Spectrum Strip */
+.specimen-layer-strip {
   transform-style: preserve-3d;
   transform: translateZ(38px);
   transition: transform 80ms linear;
 }
 
+/* Dynamic sheen responding to pointer position */
+.specimen-sheen {
+  background: linear-gradient(
+    calc(120deg + var(--tilt-x, 0) * 25deg),
+    rgba(255, 255, 255, 0.35) 0%,
+    rgba(255, 255, 255, 0.08) 35%,
+    rgba(255, 255, 255, 0) 70%
+  );
+  pointer-events: none;
+}
+
+/* Tactile swatch chip edge highlight */
+.specimen-chip-swatch {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), inset 0 -1px 0 rgba(0, 0, 0, 0.18), 0 1px 3px rgba(21, 21, 21, 0.14);
+}
+
 /* Contact shadows that shift dynamically with tilt */
 .specimen-shadow {
   box-shadow:
-    0 4px 14px -4px rgba(21, 21, 21, 0.08),
-    0 12px 30px -8px rgba(21, 21, 21, 0.08);
+    0 2px 6px rgba(21, 21, 21, 0.04),
+    0 14px 32px -8px rgba(21, 21, 21, 0.14),
+    0 28px 56px -16px rgba(21, 21, 21, 0.08);
   transition: box-shadow var(--motion-panel) var(--ease-enter);
 }
 
 .specimen-shadow.is-tilted {
   box-shadow:
-    0 22px 48px -12px rgba(21, 21, 21, 0.22),
-    0 8px 20px -4px rgba(21, 21, 21, 0.10);
+    0 4px 10px rgba(21, 21, 21, 0.06),
+    0 26px 58px -10px rgba(21, 21, 21, 0.24),
+    0 44px 84px -18px rgba(21, 21, 21, 0.16);
 }
 
 /* Old hero-tilt-card classes preserved for backward compat */
@@ -446,6 +445,7 @@ body {
   .specimen-layer-image,
   .specimen-layer-primary,
   .specimen-layer-accent,
+  .specimen-layer-strip,
   .specimen-layer-strip-1,
   .specimen-layer-strip-2,
   .specimen-layer-strip-3,

@@ -1,222 +1,157 @@
-# Afterimage Motion System
+# AFTERIMAGE — MOTION SYSTEM
+Version: 3.0  
+Pairs with: `design.md` and `layout.md`
 
-**Version:** 2.0\
-**Status:** Implementation specification\
-**Direction:** Editorial choreography, spatial depth, tactile product
-feedback
+## 1. Motion philosophy
 
-## Reference principles
+Motion should make Afterimage feel responsive, precise, and tactile. It should clarify relationships, acknowledge actions, and gently reveal the editorial composition.
 
--   **Lusion:** spatial depth, deliberate materials, restrained
-    lighting.
--   **Obys Agency:** typographic entrances and editorial pacing.
--   **Locomotive:** cohesive section transitions and page rhythm.
+**The static design must already be strong.** Motion is an enhancement, never a substitute for layout, contrast, image treatment, or hierarchy.
 
-Use these as principles, not as a request to copy any specific animation
-or site.
+The product should feel like a carefully directed instrument, not a motion-design demo.
 
-## 1. Motion intent
+## 2. Hard restrictions
 
-Motion should make Afterimage feel authored and tactile. It should
-establish hierarchy, communicate state, or clarify a spatial
-relationship. Avoid adding motion simply to make the page appear busy.
+Do not use:
+- Continuous floating or bobbing loops.
+- Decorative glowing orbs, aura effects, or blurred gradients.
+- Cursor trails, custom cursors, or cursor-following decorations.
+- Scroll-jacking or parallax that changes the user's sense of position.
+- Large elastic/bouncy easing.
+- Long entrance animations that delay access to content.
+- Repeated reveal animations on every small element.
+- Animation that blocks upload, editing, navigation, or export.
+- Motion that is required to understand the page.
+- Automatic motion that ignores `prefers-reduced-motion`.
 
-The experience should have three distinct motion layers: 1. **Hero
-choreography:** a clear, one-time opening sequence. 2. **Spatial
-interaction:** a visible but restrained response to pointer movement on
-the hero artwork. 3. **Product feedback:** short transitions for
-palette, upload, selection, copy, contrast, gradient, and export states.
+Do not add a motion library solely for small transitions. Prefer CSS and existing project utilities.
 
-The workspace must remain fast and usable. Never delay an action to
-finish an animation.
+## 3. Timing tokens
 
-## 2. Timing and easing tokens
+Use these as starting points, not as an excuse to animate every element.
 
-``` css
-:root {
-  --motion-instant: 100ms;
-  --motion-fast: 140ms;
-  --motion-standard: 180ms;
-  --motion-panel: 260ms;
-  --motion-reveal: 520ms;
+| Token | Duration | Use |
+|---|---:|---|
+| Instant | 100ms | Tiny state feedback |
+| Quick | 140ms | Button, swatch, and focus feedback |
+| Standard | 180ms | Hover and small UI transitions |
+| Enter | 260ms | Panels and local state changes |
+| Editorial | 520ms | One-time hero or section entrance, only when needed |
 
-  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
-  --ease-enter: cubic-bezier(0.16, 1, 0.3, 1);
-  --ease-exit: cubic-bezier(0.4, 0, 1, 1);
-}
-```
+Suggested easing:
+- Standard: `cubic-bezier(0.2, 0, 0, 1)`
+- Enter: `cubic-bezier(0.16, 1, 0.3, 1)`
+- Exit: `cubic-bezier(0.4, 0, 1, 1)`
 
--   100ms: pressed state or tiny icon response.
--   140ms: hover and drag-over feedback.
--   180ms: swatch selection, border/background change, disclosure.
--   260ms: panel or section transition.
--   420--520ms: one-time hero choreography.
--   Avoid normal UI transitions longer than 300ms.
--   Avoid elastic, bounce, exaggerated overshoot, and dramatic spring
-    motion.
+Avoid long delays and chained sequences. The content should become available immediately.
 
-## 3. Initial hero choreography
+## 4. Hero entrance
 
-Create a coordinated sequence, not a pile of unrelated fades.
+The hero should work without an entrance animation. If an entrance is used:
+- Keep it to one short, coordinated sequence.
+- Let the headline and specimen settle into place rather than fly across the screen.
+- Use a restrained opacity/transform change, with a small distance.
+- Avoid animating every label, swatch, and decorative plane independently.
+- Do not delay the primary CTA.
+- Do not replay the entrance when the user scrolls away and back.
 
-1.  **Headline reveal:** one or two intentional lines enter with a
-    clipped reveal or opacity plus a small upward transform. Duration
-    420--520ms. Maximum line stagger 70ms. Keep movement under 14px.
-2.  **Supporting copy and CTA:** become visible shortly after the
-    headline starts. CTA is clickable from first paint; never block
-    interaction.
-3.  **Artwork reveal:** reveal the image/color specimen with a clean
-    rectangular mask or opacity and a subtle 6--10px rise. Start
-    approximately 80--120ms after the headline.
-4.  **Color strips/swatches:** reveal in a short 25--40ms stagger,
-    capped at 180ms total delay.
-5.  **Settle:** finish in the designed resting state. No perpetual idle
-    loop or automatic repeated motion.
+The final resting state is the design target. Judge the hero from a static screenshot as well as in motion.
 
-Keep the sequence under roughly 800ms from first visible motion to
-settled state. Avoid animating every word, nav item, card, and footer
-link.
+## 5. Specimen depth and pointer response
 
-## 4. Spatial hero interaction
+Optional pointer tilt can add a tactile response to the hero specimen.
 
-The hero must have convincing depth in its static composition and become
-more tactile on interaction.
+Rules:
+- Keep rotation restrained, approximately 3–4 degrees maximum.
+- Use perspective only when the existing composition has real, distinct layers.
+- Layer movement should be subtle and bounded; do not make labels or swatches drift independently without purpose.
+- Update transforms efficiently without triggering React state updates on every pointer event.
+- Reset smoothly when the pointer leaves.
+- Enable only for fine pointers and hover-capable devices.
+- Disable on touch-first devices and when reduced motion is requested.
+- Do not use tilt to disguise a flat or weak composition.
+- No idle motion, auto-rotation, or perpetual floating.
 
-### Pointer behavior
+If the tilt is barely visible in normal use, do not increase it dramatically. Improve the static layer structure instead.
 
--   Apply only to the decorative hero composition, never the whole page.
--   Use CSS perspective in the approximate 900--1200px range.
--   Clamp rotation to about 3--5 degrees maximum per axis.
--   Use 2--4 meaningful layers with small differential transforms.
--   If appropriate, vary shadow/contact depth slightly with pointer
-    position; do not add glow.
--   Use smooth response without lag. On pointer leave, return to neutral
-    within 220--280ms.
--   Pointer response must not interfere with CTA, links, or other
-    controls.
--   Do not attach a global mouse-following decoration or custom cursor.
--   Avoid continuous requestAnimationFrame loops when the pointer is
-    idle. Prefer CSS variables or lightweight handlers.
--   If React is used, do not trigger full component-tree renders on
-    every pointer movement.
+## 6. Hover and focus feedback
 
-### Reduced motion and touch
+Interactive controls should respond quickly and consistently.
 
--   Disable pointer tilt when `prefers-reduced-motion: reduce` is
-    active.
--   Disable tilt for touch-first devices or coarse pointers.
--   Keep a visually complete static composition for those users.
--   Keyboard focus must never depend on pointer movement.
+- Buttons: subtle surface, border, or position feedback. No glow.
+- Links: clear underline or color change that remains accessible.
+- Color swatches: visible hover/focus outline and a clear indication of selection.
+- Copy/export controls: provide honest confirmation after the action succeeds.
+- Keyboard focus: always visible and never represented by motion alone.
+- Disabled controls: clearly communicate their state without pretending to be interactive.
 
-## 5. Scroll and section choreography
+Keep transitions generally within 100–180ms for direct interaction. Do not animate layout properties when a transform or opacity change is sufficient.
 
-Motion should connect sections into a coherent page rhythm without
-turning scrolling into a performance.
+## 7. Workspace transitions
 
--   Use reveals only for selected major sections and meaningful groups.
--   Prefer opacity plus `translateY(6–10px)`, duration 220--300ms.
--   Trigger once as content enters the viewport. Do not replay
-    continuously when scrolling up/down.
--   Stagger grouped cards by 25--45ms, capped at 160ms total.
--   Do not animate every paragraph, label, navigation item, or footer
-    link.
--   Do not use scroll-jacking, pinned sections that trap the user, or
-    scroll-linked effects that make the page difficult to navigate.
--   Use IntersectionObserver only as progressive enhancement. If it
-    fails or JS does not run, content must remain visible.
+- Panels may fade or move a few pixels when opening or changing state.
+- Keep the main image stable when possible; avoid making the entire workspace jump when a small inspector state changes.
+- Palette updates should feel immediate. Do not animate each color so slowly that the tool feels sluggish.
+- Loading feedback should communicate real work, not run endlessly after work has finished.
+- Error and success states should appear promptly and remain readable.
+- Export feedback must reflect the actual result of the export action.
 
-## 6. Product interaction motion
+Never delay a user action just to complete a decorative animation.
 
-### Upload
+## 8. Scroll behavior
 
--   Drag-over: 140ms border and subtle background change.
--   Processing: show an immediate, accessible status and a clear
-    progress indication if actual progress is available.
--   Invalid file: show inline error. Do not shake the page.
--   Success: reveal the extracted palette after processing completes; do
-    not fabricate processing progress.
+Use scroll-triggered motion sparingly.
 
-### Palette swatches
+- Most sections should simply appear in the document flow.
+- If a reveal materially improves the reading rhythm, use one subtle entrance for the section group.
+- Avoid animating every card, heading, paragraph, and swatch independently.
+- Do not use pinned sections or scroll hijacking.
+- Do not hide essential content until an observer fires.
+- Keep the page fully understandable with all motion disabled.
 
--   Hover: subtle border/background or 1--2px lift at most. No large
-    scaling.
--   Selected: visible outline, border, or marker; selection must not
-    rely on color alone.
--   Copy: copy action happens immediately; confirmation may use a short
-    label/icon transition.
--   Reorder, if supported: clear drag affordance and stable target
-    indication.
--   Color values must remain readable and must not animate through false
-    intermediate colors.
+The page should feel art-directed because of its layout and typography, not because content flies into view.
 
-### Workspace panels
+## 9. Reduced motion
 
--   Open/close or disclosure: 180--260ms using opacity/transform where
-    suitable.
--   Preserve layout stability. Avoid making the inspector jump or the
-    canvas resize unexpectedly.
--   Do not tilt the image, inspector, or entire workspace.
+When `prefers-reduced-motion: reduce` is active:
+- Disable pointer tilt and parallax.
+- Remove nonessential entrance and scroll animations.
+- Replace large movement with immediate state changes or minimal opacity changes.
+- Keep feedback, focus, loading, and success states understandable.
+- Do not remove functionality.
 
-### Contrast checker
+Reduced-motion behavior must be tested, not assumed.
 
--   Update results promptly when inputs change.
--   If the pass/fail state changes, use a restrained indicator
-    transition and update readable text.
--   Do not use color alone to signal pass/fail.
+## 10. Performance and implementation
 
-### Gradient builder
+- Prefer `transform` and `opacity` for animation.
+- Avoid continuous JavaScript animation loops unless essential.
+- Avoid forced layout reads/writes during pointer movement.
+- Clean up event listeners and observers.
+- Do not add a dependency for a small effect.
+- Avoid animating large filters, backdrop blur, or expensive shadows on every frame.
+- Respect existing React state boundaries; pointer movement should not trigger full component renders.
+- Ensure animations do not create horizontal overflow or cover important controls.
 
--   Gradient preview may update with the actual selected colors and
-    settings.
--   Do not animate hue through unrelated colors during ordinary updates.
--   Keep controls immediate and preserve keyboard interaction.
+## 11. Motion acceptance gate
 
-### Export and copy
+Before calling a motion task complete:
+1. Inspect the behavior in a real browser.
+2. Verify hover, focus, pointer exit, and any state transition involved.
+3. Test touch behavior or emulate a touch viewport.
+4. Test `prefers-reduced-motion`.
+5. Check that animation does not delay or block product actions.
+6. Confirm the page still looks strong when motion is disabled.
+7. Report what was actually tested.
 
--   Trigger export/copy immediately.
--   Show a concise success or error message with an appropriate
-    live-region announcement.
--   Do not make users wait for a celebratory animation.
+Do not claim a motion effect works based only on the code compiling.
 
-## 7. Reduced-motion implementation
+## 12. Definition of done
 
-Use `@media (prefers-reduced-motion: reduce)` to remove nonessential
-transforms, staggered entrances, and scroll reveals. Keep state feedback
-and clear focus/selection indicators.
-
-Do not set all transitions to zero if that makes state changes
-confusing; use immediate or very short changes where necessary.
-
-Content must be visible by default. Do not apply hidden initial styles
-unless motion support is active and the content has a safe fallback.
-
-## 8. Performance rules
-
--   Prefer transform and opacity; avoid animating layout-heavy
-    properties.
--   Avoid large blurred shadows, backdrop filters, and full-screen
-    animated layers.
--   Avoid introducing a WebGL library solely for pointer tilt.
--   Respect `will-change` sparingly and only while useful.
--   Avoid hydration/layout shifts caused by font or image loading.
--   Keep mobile interactions lightweight and static where appropriate.
--   Check the console for errors and test on a mid-range device or
-    CPU-throttled mode if available.
-
-## 9. Motion QA checklist
-
--   [ ] Headline/artwork sequence is noticeable and feels intentional,
-    not generic.
--   [ ] Hero has visible depth at rest and clear pointer response on a
-    fine pointer.
--   [ ] Hero resets smoothly on pointer leave.
--   [ ] Pointer movement does not interfere with clicks or text
-    selection.
--   [ ] No perpetual floating animation or decorative loop.
--   [ ] Scroll reveals happen once and never hide content on failure.
--   [ ] Palette selection, copy, upload, contrast, gradient, and export
-    states respond correctly.
--   [ ] Reduced-motion mode disables nonessential motion.
--   [ ] Touch and keyboard users have complete interactions.
--   [ ] No console errors, obvious frame drops, or content layout
-    shifts.
+- Motion has a clear purpose.
+- Interactions feel immediate and controlled.
+- No continuous decorative loops or glow effects were introduced.
+- Reduced-motion preferences are respected.
+- Touch and keyboard interactions remain usable.
+- The static composition remains strong.
+- Relevant browser checks were performed and reported honestly.

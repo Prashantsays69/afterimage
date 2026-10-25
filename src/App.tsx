@@ -55,6 +55,7 @@ export const App: React.FC = () => {
           <LandingPage
             onOpenWorkspace={() => handleNavigate('workspace')}
             onSelectSample={handleSelectSample}
+            onNewImage={handleNewImage}
           />
         ) : (
           <Workspace
