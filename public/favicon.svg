@@ -1,7 +1,19 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" fill="none">
+  <!-- Archival Ink Mount Framing -->
   <rect width="32" height="32" fill="#151515"/>
-  <rect x="4" y="4" width="11" height="11" fill="#F2EFE8"/>
-  <rect x="17" y="4" width="11" height="11" fill="#FF593D"/>
-  <rect x="4" y="17" width="11" height="11" fill="#2457FF"/>
-  <rect x="17" y="17" width="11" height="11" fill="#D7FF3F"/>
+  <rect x="2" y="2" width="28" height="28" fill="#F2EFE8" stroke="#151515" stroke-width="2"/>
+  
+  <!-- Layered Geometric Color-Separation Plates -->
+  <!-- Plate 1: Electric Blue (offset bottom-left) -->
+  <rect x="5" y="13" width="14" height="14" fill="#2457FF" stroke="#151515" stroke-width="1.5"/>
+  
+  <!-- Plate 2: Acid Lime (central overlapping registration) -->
+  <rect x="9" y="9" width="14" height="14" fill="#D7FF3F" stroke="#151515" stroke-width="1.5"/>
+  
+  <!-- Plate 3: Signal Red (offset top-right) -->
+  <rect x="13" y="5" width="14" height="14" fill="#FF593D" stroke="#151515" stroke-width="1.5"/>
+  
+  <!-- Central Registration Crosshair -->
+  <line x1="16" y1="13" x2="16" y2="19" stroke="#151515" stroke-width="1.5"/>
+  <line x1="13" y1="16" x2="19" y2="16" stroke="#151515" stroke-width="1.5"/>
 </svg>

@@ -10,3 +10,5 @@ dist-ssr
 .gemini/
 .impeccable/
 .opencode/
+scratch/
+ecc-plan.json

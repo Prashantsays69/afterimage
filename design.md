@@ -106,7 +106,17 @@ Keep copy specific to what the product actually does. Do not add claims that are
 - Do not apply the same shadow and border treatment to every component.
 - Keep focus indicators unmistakable.
 
-## 7. Landing-page art direction
+## 7. Editorial motion language
+
+Motion in Afterimage is an extension of its brutalist editorial identity and Swiss typographic rigor:
+- **Brutalist editorial typography:** Oversized Space Grotesk display type and IBM Plex Mono annotations animate with crisp clipped reveals and small vertical translation (6–8px). Motion emphasizes typographic weight and ink boundaries without floating loosely.
+- **Swiss-inspired composition:** Asymmetrical grid tension, razor rules, and monumental scales are preserved. Elements settle into mathematically precise alignments rather than wobbling or drifting.
+- **Tactile, print-like visual language:** Surfaces behave like archival mounting boards and ink-press plates. Micro-interactions have an instant physical click (`translateY(1px)`); pointer tilt feels like holding an architectural specimen up to directional studio lighting.
+- **Sharp geometry & intentional asymmetry:** Motion honors sharp 0px corners, hard dividing rules, and monolithic structural columns. Transitions never round off corners or soften geometric edges.
+- **Disciplined palette & typography:** The approved color palette (Paper `#F2EFE8`, Ink `#151515`, Signal Red `#FF593D`, Acid Lime `#D7FF3F`, Electric Blue `#2457FF`) and typography remain strictly sovereign. Motion never shifts hue for decorative whims.
+- **Zero generic tropes:** Absolutely no decorative gradients, glowing neon orbs, glassmorphic frosted cards, bouncy spring physics, or generic AI-product styling.
+
+## 8. Landing-page art direction
 
 The first viewport must be recognizable as an editorial composition even when completely static.
 
@@ -116,13 +126,13 @@ Build a custom **color specimen** from the user's image and its palette. It shou
 Requirements:
 - A clear visual silhouette that occupies a substantial portion of the first viewport.
 - One dominant source image, cropped intentionally.
-- Palette planes or color strips that visibly relate to the image.
-- At least three clearly distinguishable depth levels where the existing artwork and implementation permit it: background field, image plane, and foreground palette/annotation plane.
+- Palette planes or color strips that visibly relate to the image: Layer 2 floating chromatic calibration band (`specimen-palette-band`) anchored in true 3D space (`translateZ(34px)`).
+- Four authentic depth levels within the architectural specimen composition: background field (Layer 0 recessed mounting bed with 800px perspective), artwork plane (Layer 1 source image with dynamic contact shadow and 16px Z elevation), chromatic calibration band (Layer 2 floating palette strip at 34px Z elevation), and elevated foreground annotations (Layer 3 datum category tag at 52px Z, specimen title stamp at 44px Z, registration crosshairs).
 - Intentional overlap, asymmetry, and negative space.
-- Crisp geometry, matte surfaces, directional light, fine edges, and restrained contact shadows.
+- Crisp geometry, matte surfaces, directional light responding to pointer tilt, fine edges, and restrained contact shadows.
 - Typography and specimen must feel art-directed together, not placed in separate generic columns.
 - The composition must still read as designed with motion disabled.
-- Do not preserve an existing composition merely because it already exists. If it reads as generic floating cards, redesign its silhouette and spatial relationships.
+- Do not preserve or introduce detached floating-chip cards. The specimen is an integrated architectural object.
 
 ### What not to build
 - A generic two-column hero with a headline on the left and a standard mockup card on the right, unless the composition is transformed enough to feel like a distinct editorial spread.
@@ -130,7 +140,7 @@ Requirements:
 - Decorative floating UI that does not explain the image-to-palette relationship.
 - Fake product controls that imply functionality that does not exist.
 
-## 8. Workspace art direction
+## 9. Workspace art direction
 
 The workspace should become quieter than the landing page, not less considered.
 
@@ -143,7 +153,7 @@ The workspace should become quieter than the landing page, not less considered.
 - Never sacrifice keyboard navigation, readable labels, or touch target size for visual minimalism.
 - The workspace should feel like a professional instrument, not a marketing page.
 
-## 9. Responsive behavior
+## 10. Responsive behavior
 
 Treat each breakpoint as a designed composition, not a scaled desktop.
 
@@ -155,7 +165,7 @@ Treat each breakpoint as a designed composition, not a scaled desktop.
 
 Test at 320, 375, 768, 1024, and 1440 CSS pixels. Do not treat a responsive layout as complete because it technically fits.
 
-## 10. Accessibility and product quality
+## 11. Accessibility and product quality
 
 - Maintain WCAG AA contrast for normal text where applicable.
 - Provide visible keyboard focus and meaningful accessible names.
@@ -165,7 +175,7 @@ Test at 320, 375, 768, 1024, and 1440 CSS pixels. Do not treat a responsive layo
 - Preserve semantic HTML and logical heading order.
 - Avoid motion that causes disorientation or blocks interaction.
 
-## 11. Visual acceptance gate
+## 12. Visual acceptance gate
 
 A design change is not complete because code compiles or CSS values changed.
 
@@ -180,7 +190,7 @@ Before accepting a visual task:
 
 A visual task fails review if the page still reads as the same composition after the task claimed to redesign it. Do not claim visual verification without inspecting the browser.
 
-## 12. Definition of done
+## 13. Definition of done
 
 - The page has a distinct, memorable editorial identity.
 - The image-to-palette relationship is the visual focus.

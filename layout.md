@@ -157,7 +157,28 @@ Use deliberate stacking, concise labels, readable controls, and a recognizable s
 No horizontal scrolling. Essential content and actions remain usable.
 
 Test all of these widths in the browser.
-11. Implementation contract for coding agents
+11. Motion choreography across the actual layout
+
+This section documents motion behavior mapped directly against the **actual existing layout sections and components**. All structural dimensions, grids, and visual compositions remain strictly preserved.
+
+### Section-by-section animation mapping
+
+| Section & Component | Static Elements | Animated Elements | Entrance Order & Hierarchy | Zero Layout Shift Guarantee |
+|---|---|---|---|---|
+| **Section 01: Hero Broadsheet** (`HeroSpecimen`, Masthead, Ledger) | Container border, specimen tabs layout, action buttons structure, registration crosshairs (`+`), typography dimensions. | 1. Masthead folio bar (fade 400ms)<br>2. Specimen index ledger (450ms)<br>3. Headline lines 1–3 letterbox unmasking (750ms)<br>4. Archival specimen artwork reveal (750ms, 120ms delay)<br>5. Supporting copy (480ms)<br>6. Action ledger & dominant tone meter (450ms)<br>7. Bounded 3D pointer tilt & directional lighting sheen (clamped ±3.8° for fine pointers). | Order: Masthead (0ms) → Specimen Index (40ms) → Headline Line 1 (80ms) → Specimen Artwork (120ms) → Headline Line 2 (200ms) → Headline Line 3 (320ms) → Supporting Copy (360ms) → Actions (460ms). Total: ~940ms. | All movements use `transform: translateY()` and `opacity`. Container min-height is explicitly locked; layout flow is unaffected. Single-shot mount execution decoupled from scroll reveals. |
+| **Section 02: Product Proof — Unified Chromatic Ledger** (`#product-proof`) | Header, source image frame, 6-tone matrix grid, contrast badges, ratio text. | Whole section container `.scroll-reveal-container` transitions opacity 0 → 1 (`--motion-section: 650ms`) with rule draw (800ms) and column ink wipe (680ms, 45ms stagger). Swatch click applies instant selection ring. | Triggered by bidirectional `useScrollReveal` with -40px rootMargin and 20px exit hysteresis buffer. | Bounding box pre-allocated; no reflow or column width change occurs. |
+| **Section 03: How It Works — 3 Steps** (`#how-it-works`) | Section heading, 3-column grid structure, mono numbering markers. | Section reveal container (`--motion-section: 650ms`); 3 workflow cards cascade (600ms, 110ms stagger) with numeral unmasking (680ms). On hover/focus, cards transition background (Paper → White) in 140ms (`--motion-fast`). | Container reveals via bidirectional observer. Child cards respond to user hover on demand without shifting siblings. | Fixed padding and borders prevent any element jitter. |
+| **Section 04: Curated Studies** (`#curated-studies`) | Study cards, source imagery, layout rules. | Section reveal container (`--motion-section: 650ms`); study cards cascade (600ms, 120ms stagger); sample switch triggers architectural clip wipe (`.study-content-fade`, 420ms); swatch copy triggers checkmark badge (140ms). | Viewport-triggered container reveal with repeatable exit reset. Individual swatch interaction only on direct user click. | Visual state changes happen entirely within swatch bounds without expanding dimensions. |
+| **Section 05: Workspace Launch** (`#workspace-launch`) | Callout banner, CTA buttons, layout rules. | Section reveal container (`--motion-section: 650ms`) with headline unmasking (760ms) and border crisping (680ms). Primary CTA button uses `.tactile-press` (active `translateY(1px)`). | Final section reveal triggers as user scrolls down; resets cleanly on full exit. | Standard button box model; no content movement outside the button boundary. |
+| **Workspace Mode** (`ImageCanvas`, `PaletteStrip`, `Inspector`) | Canvas frame, inspector accordion panels, export modal frame. | Image canvas dropzone hover tint (140ms); processing spinner (CSS rotation); swatch reorder and selection focus rings (100ms); modal enter keyframe (260ms). | State-driven transitions execute synchronously with real user actions and data availability. | No artificial delays; canvas and inspector heights remain stable. |
+
+### Layout shift prevention guarantees
+1. **Compositor only:** All animations use `opacity`, `transform`, and `clip-path`. Layout-triggering properties (`height`, `width`, `padding`, `margin`, `top`, `left`) are never animated.
+2. **Pre-allocated containers:** The hero broadsheet enforces minimum heights (`min-h-[440px] sm:min-h-[480px] lg:min-h-[500px]`), ensuring zero layout jumping when fonts or images settle.
+3. **Bidirectional hysteresis:** `useScrollReveal` unmasks sections upon entry past `-40px` and resets only when scrolled `20px` past the boundary, preventing edge jitter while allowing intentional re-reveals on reverse scroll.
+4. **Reduced-motion instant fallback:** When reduced motion is preferred, all transforms and delays are removed (`duration: 0.01ms !important`), locking the entire layout into its static resting state immediately.
+
+12. Implementation contract for coding agents
 Before editing:
 1. Inspect the actual route, page component, CSS, and relevant components.
 2. Identify the current visual structure and any existing functional dependencies.
@@ -177,7 +198,7 @@ After editing:
 6. Run the available build, typecheck, and tests.
 7. Report files changed, checks run, results, and anything not verified.
 If the result looks materially the same as the original, stop and revise the composition before claiming completion. Do not claim browser verification unless the browser was actually inspected.
-12. Final page review checklist
+13. Final page review checklist
 - [ ] The hero is unmistakably different from a conventional headline-left / framed-preview-right layout.
 - [ ] Oversized typography, artwork, and the extracted palette form one unified visual statement.
 - [ ] The references informed the composition without being copied literally.

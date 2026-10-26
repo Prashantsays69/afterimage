@@ -36,15 +36,19 @@
   --font-body: "Inter", "Helvetica Neue", sans-serif;
   --font-mono: "IBM Plex Mono", "SFMono-Regular", Consolas, monospace;
 
-  /* Motion tokens — motion.md Section 2 */
+  /* Motion tokens — motion.md Section 3 */
   --motion-instant: 100ms;
   --motion-fast: 140ms;
   --motion-standard: 180ms;
   --motion-panel: 260ms;
-  --motion-reveal: 520ms;
+  --motion-section: 650ms;
+  --motion-hero: 700ms;
+  --motion-reveal: 700ms;
+  --motion-stagger: 120ms;
 
   --ease-standard: cubic-bezier(0.2, 0, 0, 1);
-  --ease-enter: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-enter: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-editorial: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-exit: cubic-bezier(0.4, 0, 1, 1);
   --ease-linear: linear;
 
@@ -71,8 +75,12 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   Base reset
+   Base reset & Smooth Scrolling
    ═══════════════════════════════════════════════════════════════ */
+
+html {
+  scroll-behavior: smooth;
+}
 
 body {
   margin: 0;
@@ -82,6 +90,19 @@ body {
   font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Frosted-Glass Editorial Header
+   Translucent warm-paper with backdrop blur & crisp border
+   ═══════════════════════════════════════════════════════════════ */
+
+.editorial-header {
+  background-color: rgba(242, 239, 232, 0.65);
+  backdrop-filter: blur(24px) saturate(140%);
+  -webkit-backdrop-filter: blur(24px) saturate(140%);
+  border-bottom: 2px solid var(--color-ink);
+  box-shadow: 0 4px 20px -2px rgba(21, 21, 21, 0.08);
 }
 
 /* Custom scrollbar */
@@ -105,11 +126,53 @@ body {
    motion.md Section 3: Coordinated entrance sequence
    ═══════════════════════════════════════════════════════════════ */
 
-/* Headline clipped reveal: slide up from below a clip boundary */
+/* Editorial line overflow mask container */
+.editorial-mask {
+  display: block;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Monumental letterbox unmask: typography physically emerges from a razor line slit */
+@keyframes heroLineUnmask {
+  0% {
+    transform: translateY(105%);
+    opacity: 0;
+  }
+  30% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(0%);
+    opacity: 1;
+  }
+}
+
+.hero-unmask-line {
+  display: block;
+  will-change: transform;
+}
+
+.hero-unmask-line-1,
+.animate-hero-headline-1 {
+  animation: heroLineUnmask 750ms var(--ease-editorial) 80ms both;
+}
+
+.hero-unmask-line-2,
+.animate-hero-headline-2 {
+  animation: heroLineUnmask 750ms var(--ease-editorial) 200ms both;
+}
+
+.hero-unmask-line-3,
+.animate-hero-headline-3 {
+  animation: heroLineUnmask 750ms var(--ease-editorial) 320ms both;
+}
+
+/* Headline clipped reveal: slide up from below a clip boundary (22px travel, 700ms) */
 @keyframes heroClipReveal {
   from {
     opacity: 0;
-    transform: translateY(12px);
+    transform: translateY(22px);
     clip-path: inset(100% 0 0 0);
   }
   to {
@@ -119,8 +182,32 @@ body {
   }
 }
 
-/* General entrance: opacity + small rise */
+/* General entrance: opacity + restrained 6px rise */
 @keyframes heroEntrance {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Hero Artwork Plate Assembly Entrance */
+@keyframes heroArtworkPlateEntrance {
+  0% {
+    opacity: 0;
+    transform: translateZ(50px) translateY(-16px) scale(0.975);
+  }
+  100% {
+    opacity: 1;
+    transform: translateZ(0) translateY(0) scale(1);
+  }
+}
+
+/* Archival print artwork reveal: restrained subtle rise without 3D perspective clipping */
+@keyframes artworkPrintReveal {
   from {
     opacity: 0;
     transform: translateY(8px);
@@ -131,11 +218,11 @@ body {
   }
 }
 
-/* Artwork reveal: opacity + subtle 8px rise */
+/* Artwork reveal (preserved for backward compat) */
 @keyframes artworkReveal {
   from {
     opacity: 0;
-    transform: translateY(8px) scale(0.98);
+    transform: translateY(18px) scale(0.975);
   }
   to {
     opacity: 1;
@@ -143,11 +230,11 @@ body {
   }
 }
 
-/* Swatch entrance: subtle pop */
+/* Swatch entrance: subtle pop / rise */
 @keyframes swatchEntrance {
   from {
     opacity: 0;
-    transform: translateY(4px);
+    transform: translateY(6px);
   }
   to {
     opacity: 1;
@@ -159,7 +246,7 @@ body {
 @keyframes modalEnter {
   from {
     opacity: 0;
-    transform: translateY(4px);
+    transform: translateY(8px);
   }
   to {
     opacity: 1;
@@ -167,47 +254,122 @@ body {
   }
 }
 
+/* Modal backdrop fade */
+@keyframes backdropFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Workspace view route fade */
+@keyframes viewFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Specimen and study tab transition: authored architectural wipe */
+@keyframes studyFadeIn {
+  0% {
+    clip-path: inset(0 100% 0 0);
+    opacity: 0.3;
+    transform: scale(1.02);
+  }
+  100% {
+    clip-path: inset(0 0 0 0);
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Swatch copy feedback micro-badge pop */
+@keyframes copyBadgePop {
+  0% {
+    transform: scale(0.92);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.06);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
 /* ═══════════════════════════════════════════════════════════════
    HERO ENTRANCE CHOREOGRAPHY CLASSES
    motion.md Section 3: Staggered editorial reveal
-   Headline → Support → CTA → Artwork → Swatches
-   Total sequence ~800ms
+   Eyebrow (0ms) → Specimen Index (40ms) → Headline 1 (80ms) →
+   Artwork Wipe (120ms) → Headline 2 (200ms) → Headline 3 (320ms) →
+   Support (380ms) → Actions (480ms)
+   Total sequence ~940ms
    ═══════════════════════════════════════════════════════════════ */
 
 .animate-hero-eyebrow {
   animation: heroEntrance 400ms var(--ease-enter) 0ms both;
 }
 
-.animate-hero-headline-1 {
-  animation: heroClipReveal var(--motion-reveal) var(--ease-enter) 60ms both;
-}
-
-.animate-hero-headline-2 {
-  animation: heroClipReveal var(--motion-reveal) var(--ease-enter) 130ms both;
-}
-
-.animate-hero-support {
-  animation: heroEntrance 440ms var(--ease-enter) 200ms both;
-}
-
-.animate-hero-actions {
-  animation: heroEntrance 400ms var(--ease-enter) 260ms both;
-}
-
-.animate-hero-privacy {
-  animation: heroEntrance 360ms var(--ease-enter) 320ms both;
+.animate-hero-specimen-index {
+  animation: heroEntrance 450ms var(--ease-enter) 40ms both;
 }
 
 .animate-hero-artwork {
-  animation: artworkReveal 480ms var(--ease-enter) 100ms both;
+  animation: heroArtworkPlateEntrance 750ms var(--ease-editorial) 60ms both;
+}
+
+.animate-hero-headline-1 {
+  animation: heroLineUnmask 750ms var(--ease-editorial) 300ms both;
+}
+
+.animate-hero-headline-2 {
+  animation: heroLineUnmask 750ms var(--ease-editorial) 440ms both;
+}
+
+.animate-hero-headline-3 {
+  animation: heroLineUnmask 750ms var(--ease-editorial) 560ms both;
+}
+
+.animate-hero-support {
+  animation: heroEntrance 480ms var(--ease-enter) 660ms both;
+}
+
+.animate-hero-actions {
+  animation: heroEntrance 450ms var(--ease-enter) 740ms both;
+}
+
+.animate-hero-privacy {
+  animation: heroEntrance 400ms var(--ease-enter) 820ms both;
 }
 
 .animate-swatch-entrance {
   animation: swatchEntrance var(--motion-standard) var(--ease-enter) both;
 }
 
+.specimen-swatch-entrance {
+  animation: swatchEntrance 240ms var(--ease-enter) calc(320ms + var(--swatch-idx, 0) * 40ms) both;
+}
+
 .animate-modal-enter {
-  animation: modalEnter var(--motion-standard) var(--ease-enter) both;
+  animation: modalEnter var(--motion-panel) var(--ease-enter) both;
+}
+
+.animate-backdrop-fade {
+  animation: backdropFadeIn var(--motion-fast) var(--ease-standard) both;
+}
+
+.animate-view-fade {
+  animation: viewFadeIn var(--motion-standard) var(--ease-standard) both;
+}
+
+.animate-copy-pop {
+  animation: copyBadgePop 140ms var(--ease-standard) both;
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -216,85 +378,138 @@ body {
    ═══════════════════════════════════════════════════════════════ */
 
 .hero-perspective-wrap {
-  perspective: 1200px;
-  perspective-origin: 50% 45%;
+  perspective: 800px;
+  perspective-origin: 50% 50%;
+  transform-style: preserve-3d;
 }
 
 .hero-specimen {
   transform-style: preserve-3d;
   will-change: transform;
-  transition: transform var(--motion-panel) var(--ease-enter);
 }
 
-/* Base archival specimen mount board */
-.specimen-layer-base {
+/* Layer 1: Dominant Source Artwork Plate with Directional Contact Shadow */
+.hero-specimen-plate {
   transform-style: preserve-3d;
-  transform: translateZ(0px);
-  background: linear-gradient(175deg, #FFFFFF 0%, #F9F7F3 100%);
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.9), 0 1px 3px rgba(21, 21, 21, 0.04);
+  box-shadow:
+    calc(var(--tilt-x, 0) * -36px) calc(var(--tilt-y, 0) * -36px + 28px) 44px -4px rgba(21, 21, 21, 0.40),
+    calc(var(--tilt-x, 0) * -16px) calc(var(--tilt-y, 0) * -16px + 12px) 20px -2px rgba(21, 21, 21, 0.24),
+    0 0 0 2px var(--color-ink),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.35);
 }
 
-/* Layer 1: Source Image Plane — tactile archival mount */
-.specimen-layer-image {
+/* Dominant Source Artwork Plane — clipped cleanly inside its razor frame */
+.specimen-artwork-plane {
+  transform: translateZ(16px);
   transform-style: preserve-3d;
-  transform: translateZ(26px) translate(calc(var(--tilt-x, 0) * -3.5px), calc(var(--tilt-y, 0) * -3.5px));
-  box-shadow: 0 16px 36px -8px rgba(21, 21, 21, 0.22), 0 4px 12px -2px rgba(21, 21, 21, 0.10);
-  transition: transform 80ms linear, box-shadow var(--motion-panel) var(--ease-enter);
 }
 
-/* Layer 2: Primary Extracted Color Plate — sculptural thick lacquer slab */
-.specimen-layer-primary {
+/* Layer 2: Floating Chromatic Palette Calibration Band */
+.specimen-palette-band {
+  transform: translateZ(36px) translate(calc(var(--tilt-x, 0) * 8px), calc(var(--tilt-y, 0) * 8px));
+  box-shadow:
+    calc(var(--tilt-x, 0) * -10px) calc(var(--tilt-y, 0) * -10px + 10px) 16px rgba(0, 0, 0, 0.45);
+}
+
+/* Layer 3: Elevated Foreground Instrumentation Details Layer */
+.specimen-foreground-layer {
   transform-style: preserve-3d;
-  transform: translateZ(50px) translate(calc(var(--tilt-x, 0) * 7.5px), calc(var(--tilt-y, 0) * 7.5px));
-  box-shadow: 0 20px 42px -10px rgba(21, 21, 21, 0.28), 0 8px 18px -4px rgba(21, 21, 21, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.95);
-  transition: transform 80ms linear, box-shadow var(--motion-panel) var(--ease-enter);
+  pointer-events: none;
 }
 
-/* Layer 3: Secondary Accent Color Plate — cantilevered floating chip */
-.specimen-layer-accent {
-  transform-style: preserve-3d;
-  transform: translateZ(68px) translate(calc(var(--tilt-x, 0) * 11px), calc(var(--tilt-y, 0) * 11px)) rotate(-1.5deg);
-  box-shadow: 0 24px 50px -12px rgba(21, 21, 21, 0.32), 0 10px 22px -5px rgba(21, 21, 21, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.95);
-  transition: transform 80ms linear, box-shadow var(--motion-panel) var(--ease-enter);
+/* Elevated datum category badge with authentic counter-parallax and crisp contact shadow */
+.specimen-datum-tag {
+  transform: translateZ(54px) translate(calc(var(--tilt-x, 0) * 12px), calc(var(--tilt-y, 0) * 12px));
+  background-color: #151515;
+  color: #FFFFFF;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  box-shadow:
+    calc(var(--tilt-x, 0) * -12px) calc(var(--tilt-y, 0) * -12px + 10px) 20px rgba(0, 0, 0, 0.52),
+    0 2px 4px rgba(0, 0, 0, 0.3);
+  pointer-events: auto;
 }
 
-/* Layer 4: Interactive Calibration Spectrum Strip */
-.specimen-layer-strip {
-  transform-style: preserve-3d;
-  transform: translateZ(38px);
-  transition: transform 80ms linear;
+/* Elevated specimen identification stamp */
+.specimen-datum-stamp {
+  transform: translateZ(46px) translate(calc(var(--tilt-x, 0) * 10px), calc(var(--tilt-y, 0) * 10px));
+  background-color: #151515;
+  color: #FFFFFF;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  box-shadow:
+    calc(var(--tilt-x, 0) * -12px) calc(var(--tilt-y, 0) * -12px + 10px) 20px rgba(0, 0, 0, 0.52),
+    0 2px 4px rgba(0, 0, 0, 0.3);
+  pointer-events: auto;
 }
 
-/* Dynamic sheen responding to pointer position */
+/* Elevated registration crosshairs */
+.specimen-crosshair {
+  transform: translateZ(28px) translate(calc(var(--tilt-x, 0) * 5px), calc(var(--tilt-y, 0) * 5px));
+}
+
+/* Elevated interactive hover prompt */
+.specimen-hover-prompt {
+  transform: translateZ(50px) translate(calc(var(--tilt-x, 0) * 10px), calc(var(--tilt-y, 0) * 10px));
+  background-color: #151515;
+  color: #FFFFFF;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  box-shadow:
+    calc(var(--tilt-x, 0) * -12px) calc(var(--tilt-y, 0) * -12px + 10px) 20px rgba(0, 0, 0, 0.52),
+    0 2px 4px rgba(0, 0, 0, 0.3);
+  transition: opacity var(--motion-fast) var(--ease-enter);
+  pointer-events: auto;
+}
+
+/* Foreground datum calibration entrance */
+@keyframes datumCalibrate {
+  0% {
+    opacity: 0;
+    transform: translateZ(52px) translateY(14px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateZ(52px) translateY(0);
+  }
+}
+
+.animate-datum-calibrate {
+  animation: datumCalibrate 650ms var(--ease-editorial) 220ms both;
+}
+
+@keyframes crosshairStamp {
+  0% {
+    opacity: 0;
+    transform: translateZ(26px) scale(0.6);
+  }
+  100% {
+    opacity: 0.7;
+    transform: translateZ(26px) scale(1);
+  }
+}
+
+.animate-crosshair-stamp {
+  animation: crosshairStamp 450ms var(--ease-editorial) 260ms both;
+}
+
+/* Dynamic specular sheen responding coherently to pointer position */
 .specimen-sheen {
   background: linear-gradient(
-    calc(120deg + var(--tilt-x, 0) * 25deg),
-    rgba(255, 255, 255, 0.35) 0%,
-    rgba(255, 255, 255, 0.08) 35%,
-    rgba(255, 255, 255, 0) 70%
+    calc(125deg + var(--tilt-x, 0) * 32deg + var(--tilt-y, 0) * 18deg),
+    rgba(255, 255, 255, 0.28) 0%,
+    rgba(255, 255, 255, 0.08) calc(32% + var(--tilt-y, 0) * 12%),
+    rgba(255, 255, 255, 0) 65%
   );
   pointer-events: none;
 }
 
-/* Tactile swatch chip edge highlight */
+/* Backward compatibility aliases */
+.specimen-layer-image {
+  transform-style: preserve-3d;
+}
 .specimen-chip-swatch {
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), inset 0 -1px 0 rgba(0, 0, 0, 0.18), 0 1px 3px rgba(21, 21, 21, 0.14);
 }
-
-/* Contact shadows that shift dynamically with tilt */
 .specimen-shadow {
-  box-shadow:
-    0 2px 6px rgba(21, 21, 21, 0.04),
-    0 14px 32px -8px rgba(21, 21, 21, 0.14),
-    0 28px 56px -16px rgba(21, 21, 21, 0.08);
-  transition: box-shadow var(--motion-panel) var(--ease-enter);
-}
-
-.specimen-shadow.is-tilted {
-  box-shadow:
-    0 4px 10px rgba(21, 21, 21, 0.06),
-    0 26px 58px -10px rgba(21, 21, 21, 0.24),
-    0 44px 84px -18px rgba(21, 21, 21, 0.16);
+  box-shadow: 0 14px 32px -8px rgba(21, 21, 21, 0.14), 0 28px 56px -16px rgba(21, 21, 21, 0.08);
 }
 
 /* Old hero-tilt-card classes preserved for backward compat */
@@ -336,19 +551,177 @@ body {
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   SCROLL REVEAL
+   SCROLL REVEAL & DISTINCT SECTION CHOREOGRAPHY
    motion.md Section 5: Section choreography
    ═══════════════════════════════════════════════════════════════ */
 
 .scroll-reveal-container {
-  opacity: 0;
-  transform: translateY(8px);
-  transition: opacity var(--motion-panel) var(--ease-enter), transform var(--motion-panel) var(--ease-enter);
+  /* Section background remains grounded so interior elements articulate with high contrast */
+  opacity: 1;
 }
 
-.scroll-reveal-container.is-revealed {
+/* Section 02: Architectural rule draw from left */
+.scroll-reveal-rule {
+  transform-origin: left center;
+  transform: scaleX(0);
+  transition: transform 800ms var(--ease-editorial) 60ms;
+}
+
+.is-revealed .scroll-reveal-rule,
+.scroll-reveal-rule.is-revealed {
+  transform: scaleX(1);
+}
+
+/* Section 02: Spectrum calibration meter bar expansion */
+.scroll-reveal-meter {
+  transform-origin: left center;
+  transform: scaleX(0.94);
+  opacity: 0.7;
+  transition: transform 650ms var(--ease-editorial) 100ms, opacity 650ms var(--ease-editorial) 100ms;
+}
+
+.is-revealed .scroll-reveal-meter {
+  transform: scaleX(1);
+  opacity: 1;
+}
+
+/* Section 02: Sequential chromatic column directional ink-wipes */
+.spectrum-column-reveal {
+  clip-path: inset(100% 0 0 0);
+  transform: translateY(28px);
+  opacity: 0;
+  transition: clip-path 700ms var(--ease-editorial), transform 700ms var(--ease-editorial), opacity 480ms var(--ease-editorial);
+  transition-delay: calc(var(--col-idx, 0) * 70ms + 100ms);
+}
+
+.is-revealed .spectrum-column-reveal {
+  clip-path: inset(0 0 0 0);
+  transform: translateY(0);
+  opacity: 1;
+}
+
+/* Section 03: 3-Stage workflow sequential column cascade */
+.workflow-step-card {
+  opacity: 0;
+  transform: translateY(36px);
+  transition: opacity 650ms var(--ease-editorial), transform 650ms var(--ease-editorial), border-color var(--motion-fast) var(--ease-standard), background-color var(--motion-fast) var(--ease-standard);
+  transition-delay: calc(var(--step-idx, 0) * 150ms + 100ms);
+}
+
+.is-revealed .workflow-step-card {
   opacity: 1;
   transform: translateY(0);
+}
+
+/* Section 03: Monumental numeral letterbox unmask */
+.workflow-num-reveal {
+  display: inline-block;
+  transform: translateY(115%);
+  will-change: transform;
+  transition: transform 720ms var(--ease-editorial);
+  transition-delay: calc(var(--step-idx, 0) * 150ms + 160ms);
+}
+
+.is-revealed .workflow-num-reveal {
+  transform: translateY(0%);
+}
+
+/* Section 04: Curated studies perspective depth-and-settle card entrance */
+.study-card-reveal {
+  opacity: 0;
+  transform: perspective(1000px) rotateX(4deg) translateY(36px);
+  transition: opacity 700ms var(--ease-editorial), transform 700ms var(--ease-editorial), box-shadow var(--motion-fast) var(--ease-standard);
+  transition-delay: calc(var(--card-idx, 0) * 160ms + 100ms);
+}
+
+.is-revealed .study-card-reveal {
+  opacity: 1;
+  transform: perspective(1000px) rotateX(0deg) translateY(0);
+}
+
+.study-card-reveal:hover {
+  box-shadow: 4px 4px 0 var(--color-ink);
+  transform: translateY(-2px);
+}
+
+/* Section 04: Curated studies tab-switch transition */
+.study-content-fade {
+  animation: studyFadeIn 420ms var(--ease-editorial) both;
+}
+
+/* Section 05: Letterbox unmasking & high-contrast border crisping */
+.cta-headline-reveal {
+  display: block;
+  transform: translateY(112%);
+  will-change: transform;
+  transition: transform 760ms var(--ease-editorial) 100ms;
+}
+
+.is-revealed .cta-headline-reveal {
+  transform: translateY(0%);
+}
+
+.cta-border-reveal {
+  border-color: var(--color-rule);
+  transform: translateY(24px);
+  opacity: 0;
+  transition: border-color 680ms var(--ease-editorial) 180ms, transform 680ms var(--ease-editorial) 180ms, opacity 500ms var(--ease-editorial) 180ms;
+}
+
+.is-revealed .cta-border-reveal {
+  border-color: var(--color-ink);
+  transform: translateY(0);
+  opacity: 1;
+}
+
+/* Editorial section headline unmasking */
+.section-headline-reveal {
+  display: block;
+  transform: translateY(112%);
+  will-change: transform;
+  transition: transform 720ms var(--ease-editorial) 60ms;
+}
+
+.is-revealed .section-headline-reveal {
+  transform: translateY(0%);
+}
+
+/* Accordion chevron smooth 180deg toggle */
+.accordion-chevron {
+  transition: transform var(--motion-fast) var(--ease-standard);
+}
+
+.accordion-chevron.is-open {
+  transform: rotate(180deg);
+}
+
+@media (scripting: none) {
+  .scroll-reveal-container,
+  .scroll-reveal-rule,
+  .scroll-reveal-meter,
+  .spectrum-column-reveal,
+  .workflow-step-card,
+  .workflow-num-reveal,
+  .study-card-reveal,
+  .cta-headline-reveal,
+  .cta-border-reveal,
+  .section-headline-reveal,
+  .animate-datum-calibrate,
+  .animate-crosshair-stamp,
+  .hero-unmask-line,
+  .animate-hero-eyebrow,
+  .animate-hero-headline-1,
+  .animate-hero-headline-2,
+  .animate-hero-headline-3,
+  .animate-hero-support,
+  .animate-hero-actions,
+  .animate-hero-privacy,
+  .animate-hero-artwork,
+  .animate-hero-specimen-index {
+    opacity: 1 !important;
+    transform: none !important;
+    clip-path: none !important;
+  }
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -364,23 +737,42 @@ body {
               box-shadow var(--motion-fast) var(--ease-standard);
 }
 
+.tactile-press:hover {
+  box-shadow: 2px 2px 0 var(--color-ink);
+}
+
 .tactile-press:active {
-  transform: translateY(1px);
+  transform: translate(1.5px, 1.5px);
+  box-shadow: 0 0 0 var(--color-ink);
 }
 
 .tactile-swatch {
   transition: border-color var(--motion-fast) var(--ease-standard),
               background-color var(--motion-fast) var(--ease-standard),
-              transform var(--motion-instant) var(--ease-standard),
+              transform var(--motion-fast) var(--ease-editorial),
               box-shadow var(--motion-fast) var(--ease-standard);
+  will-change: transform;
 }
 
 .tactile-swatch:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 0 var(--color-ink);
   border-color: var(--color-ink);
 }
 
 .tactile-swatch:active {
-  transform: translateY(1px);
+  transform: translateY(0);
+  box-shadow: 0 1px 0 var(--color-ink);
+}
+
+.tactile-swatch[aria-selected="true"] {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 0 var(--color-ink);
+}
+
+.tactile-swatch[aria-selected="true"]:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 0 var(--color-ink);
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -421,13 +813,33 @@ body {
   .animate-hero-eyebrow,
   .animate-hero-headline-1,
   .animate-hero-headline-2,
+  .animate-hero-headline-3,
   .animate-hero-support,
   .animate-hero-actions,
   .animate-hero-privacy,
   .animate-hero-artwork,
+  .animate-datum-calibrate,
+  .animate-crosshair-stamp,
   .animate-swatch-entrance,
+  .specimen-swatch-entrance,
   .animate-modal-enter,
-  .scroll-reveal-container {
+  .animate-backdrop-fade,
+  .animate-view-fade,
+  .animate-copy-pop,
+  .study-content-fade,
+  .scroll-reveal-container,
+  .scroll-reveal-rule,
+  .scroll-reveal-meter,
+  .spectrum-column-reveal,
+  .workflow-step-card,
+  .workflow-num-reveal,
+  .study-card-reveal,
+  .section-headline-reveal,
+  .cta-headline-reveal,
+  .cta-border-reveal,
+  .hero-unmask-line,
+  .animate-hero-specimen-index,
+  .accordion-chevron {
     opacity: 1 !important;
     transform: none !important;
     animation: none !important;
@@ -441,6 +853,14 @@ body {
     will-change: auto !important;
   }
 
+  .hero-specimen-plate,
+  .specimen-artwork-plane,
+  .specimen-palette-band,
+  .specimen-foreground-layer,
+  .specimen-datum-tag,
+  .specimen-datum-stamp,
+  .specimen-crosshair,
+  .specimen-hover-prompt,
   .specimen-layer-base,
   .specimen-layer-image,
   .specimen-layer-primary,
@@ -460,7 +880,36 @@ body {
   }
 
   .tactile-press:active,
-  .tactile-swatch:active {
+  .tactile-swatch:active,
+  .tactile-swatch:hover,
+  .tactile-swatch[aria-selected="true"],
+  .tactile-swatch[aria-selected="true"]:hover {
+    transform: none !important;
+    box-shadow: none !important;
+  }
+
+  .brand-plane {
+    transition: none !important;
     transform: none !important;
   }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   BRAND IDENTITY: COLOR-SEPARATION LAYERED PLANES
+   ═══════════════════════════════════════════════════════════════ */
+.brand-plane {
+  transform-origin: center;
+  transition: transform 280ms var(--ease-editorial);
+}
+
+.group:hover .brand-plane-blue {
+  transform: translate(-1.2px, 1.2px);
+}
+
+.group:hover .brand-plane-red {
+  transform: translate(1.2px, -1.2px);
+}
+
+.group:hover .brand-plane-lime {
+  transform: scale(1.04);
 }

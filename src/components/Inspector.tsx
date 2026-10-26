@@ -24,7 +24,6 @@ import {
   CheckCircle2,
   XCircle,
   ChevronDown,
-  ChevronUp,
   Sparkles,
 } from 'lucide-react';
 
@@ -94,12 +93,23 @@ export const Inspector: React.FC<InspectorProps> = ({
 
   if (!selectedSwatch) {
     return (
-      <aside className="bg-white border border-rule p-6 flex flex-col items-center justify-center text-center min-h-[300px]">
-        <div className="w-12 h-12 border border-rule flex items-center justify-center mb-3 text-muted">
-          <Sparkles className="w-5 h-5" />
+      <aside className="bg-white border-2 border-ink relative overflow-hidden" aria-label="Color Inspector">
+        <div className="px-4 py-2.5 bg-paper border-b-2 border-ink flex items-center justify-between font-mono text-xs">
+          <span className="font-bold text-ink uppercase tracking-wider flex items-center gap-2">
+            <span className="w-2 h-2 bg-signal-red inline-block" aria-hidden="true" />
+            <span>01 // INSPECTOR CONSOLE</span>
+          </span>
+          <span className="text-muted text-[10px] uppercase font-bold tracking-wider">STANDBY</span>
         </div>
-        <h3 className="font-display font-semibold text-base text-ink mb-1">No Color Selected</h3>
-        <p className="text-sm text-muted">Select a swatch from the palette to inspect and adjust its values.</p>
+        <div className="p-8 flex flex-col items-center justify-center text-center min-h-[320px]">
+          <div className="w-12 h-12 border-2 border-ink bg-paper flex items-center justify-center mb-3 text-ink">
+            <Sparkles className="w-5 h-5" />
+          </div>
+          <h3 className="font-display font-black text-base text-ink uppercase tracking-tight mb-1">No Color Selected</h3>
+          <p className="font-body text-xs text-ink/70 max-w-xs leading-relaxed">
+            Select a swatch from the palette or choose an image to calibrate channels and test WCAG contrast.
+          </p>
+        </div>
       </aside>
     );
   }
@@ -148,24 +158,25 @@ export const Inspector: React.FC<InspectorProps> = ({
     exportFormat === 'css' ? generateCssVariables(palette) : generateJsonTokens(palette);
 
   return (
-    <aside className="bg-white border border-rule divide-y divide-rule" aria-label="Color Inspector">
+    <aside className="bg-white border-2 border-ink divide-y-2 divide-ink" aria-label="Color Inspector">
       {/* 1. Selected Color Overview */}
       <section className="p-4 md:p-5">
         <div className="flex items-center justify-between pb-3">
-          <h3 className="font-display font-semibold text-sm tracking-wide uppercase text-ink flex items-center gap-2">
+          <h3 className="font-mono font-bold text-xs tracking-wider uppercase text-ink flex items-center gap-2">
+            <span className="w-2 h-2 bg-signal-red inline-block" aria-hidden="true" />
             <span>01</span> Color Inspector
           </h3>
-          <span className="font-mono text-xs text-muted">{selectedSwatch.hex}</span>
+          <span className="font-mono text-xs font-bold text-ink">{selectedSwatch.hex}</span>
         </div>
 
         <div className="flex gap-4 items-stretch mb-4">
           {/* Swatch Preview Block with 140ms transition per motion.md Section 5 */}
           <div
-            className="w-20 h-20 md:w-24 md:h-24 border border-rule flex-shrink-0 relative transition-colors duration-fast"
+            className="w-20 h-20 md:w-24 md:h-24 border-2 border-ink flex-shrink-0 relative transition-colors duration-fast"
             style={{ backgroundColor: selectedSwatch.hex }}
             aria-label={`Preview of color ${selectedSwatch.hex}`}
           >
-            <div className="absolute bottom-1 right-1 bg-ink text-white font-mono text-[9px] px-1 py-0.5">
+            <div className="absolute bottom-1 right-1 bg-ink text-acid-lime font-mono text-[9px] font-bold px-1.5 py-0.5 border border-ink">
               PREVIEW
             </div>
           </div>
@@ -173,7 +184,7 @@ export const Inspector: React.FC<InspectorProps> = ({
           {/* Editable HEX input and controls */}
           <div className="flex-1 flex flex-col justify-between">
             <div>
-              <label htmlFor="hex-editor-input" className="block text-xs font-mono uppercase text-muted mb-1">
+              <label htmlFor="hex-editor-input" className="block text-xs font-mono font-bold uppercase text-ink mb-1">
                 HEX Value
               </label>
               <div className="flex items-center gap-2">
@@ -183,8 +194,8 @@ export const Inspector: React.FC<InspectorProps> = ({
                   value={hexInput}
                   onChange={handleHexChange}
                   maxLength={7}
-                  className={`w-full px-3 py-2 bg-paper border font-mono text-sm uppercase text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-blue ${
-                    hexError ? 'border-error' : 'border-rule'
+                  className={`w-full px-3 py-2 bg-paper border-2 font-mono text-sm uppercase font-bold text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-blue ${
+                    hexError ? 'border-error' : 'border-ink'
                   }`}
                   aria-invalid={!!hexError}
                   aria-describedby={hexError ? 'hex-error-msg' : undefined}
@@ -192,7 +203,7 @@ export const Inspector: React.FC<InspectorProps> = ({
                 <button
                   type="button"
                   onClick={() => copy(selectedSwatch.hex, 'HEX')}
-                  className="tactile-press px-3 py-2 bg-paper border border-rule hover:border-ink text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-blue flex items-center gap-1.5"
+                  className="tactile-press px-3 py-2 bg-paper border-2 border-ink hover:bg-ink hover:text-white text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-blue flex items-center gap-1.5 transition-colors font-mono font-bold text-xs uppercase"
                   title="Copy HEX value"
                   aria-label="Copy HEX value"
                 >
@@ -207,7 +218,7 @@ export const Inspector: React.FC<InspectorProps> = ({
                 </button>
               </div>
               {hexError && (
-                <p id="hex-error-msg" className="text-xs text-error mt-1 font-mono">
+                <p id="hex-error-msg" className="text-xs text-error mt-1 font-mono font-bold">
                   {hexError}
                 </p>
               )}
@@ -215,18 +226,18 @@ export const Inspector: React.FC<InspectorProps> = ({
 
             {/* RGB Synchronized Readout */}
             <div className="pt-2">
-              <span className="block text-[11px] font-mono uppercase text-muted mb-1">RGB Channels</span>
+              <span className="block text-[11px] font-mono font-bold uppercase text-muted mb-1">RGB Channels</span>
               <div className="grid grid-cols-3 gap-2">
                 {(['r', 'g', 'b'] as const).map((channel) => (
-                  <div key={channel} className="flex items-center border border-rule bg-paper px-2 py-1">
-                    <span className="text-[10px] font-mono uppercase text-muted mr-1.5">{channel}:</span>
+                  <div key={channel} className="flex items-center border-2 border-ink bg-paper px-2 py-1">
+                    <span className="text-[10px] font-mono font-bold uppercase text-muted mr-1.5">{channel}:</span>
                     <input
                       type="number"
                       min={0}
                       max={255}
                       value={selectedSwatch.rgb[channel]}
                       onChange={(e) => handleRgbChange(channel, parseInt(e.target.value, 10))}
-                      className="w-full bg-transparent font-mono text-xs text-ink focus:outline-none"
+                      className="w-full bg-transparent font-mono text-xs font-bold text-ink focus:outline-none"
                       aria-label={`${channel.toUpperCase()} channel`}
                     />
                   </div>
@@ -242,13 +253,14 @@ export const Inspector: React.FC<InspectorProps> = ({
         <button
           type="button"
           onClick={() => toggleSection('adjustments')}
-          className="w-full flex items-center justify-between font-display font-semibold text-sm tracking-wide uppercase text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-blue text-left"
+          className="w-full flex items-center justify-between font-mono font-bold text-xs tracking-wider uppercase text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-blue text-left"
           aria-expanded={!collapsedSections.adjustments}
         >
           <span className="flex items-center gap-2">
+            <span className="w-2 h-2 bg-signal-red inline-block" aria-hidden="true" />
             <span>02</span> HSL Precision Adjustments
           </span>
-          {collapsedSections.adjustments ? <ChevronDown className="w-4 h-4" /> : <ChevronUp className="w-4 h-4" />}
+          <ChevronDown className={`w-4 h-4 accordion-chevron ${!collapsedSections.adjustments ? 'is-open' : ''}`} />
         </button>
 
         {!collapsedSections.adjustments && (
@@ -256,8 +268,8 @@ export const Inspector: React.FC<InspectorProps> = ({
             {/* Hue */}
             <div>
               <div className="flex justify-between items-center text-xs font-mono mb-1">
-                <label htmlFor="hue-slider" className="text-muted uppercase">Hue</label>
-                <span className="text-ink font-semibold">{selectedSwatch.hsl.h}°</span>
+                <label htmlFor="hue-slider" className="text-ink font-bold uppercase">Hue</label>
+                <span className="text-ink font-bold">{selectedSwatch.hsl.h}°</span>
               </div>
               <input
                 id="hue-slider"
@@ -266,15 +278,15 @@ export const Inspector: React.FC<InspectorProps> = ({
                 max={360}
                 value={selectedSwatch.hsl.h}
                 onChange={(e) => handleHslChange('h', Number(e.target.value))}
-                className="w-full h-2 bg-paper border border-rule accent-ink cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-blue"
+                className="w-full h-2.5 bg-paper border-2 border-ink accent-ink cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-blue"
               />
             </div>
 
             {/* Saturation */}
             <div>
               <div className="flex justify-between items-center text-xs font-mono mb-1">
-                <label htmlFor="sat-slider" className="text-muted uppercase">Saturation</label>
-                <span className="text-ink font-semibold">{selectedSwatch.hsl.s}%</span>
+                <label htmlFor="sat-slider" className="text-ink font-bold uppercase">Saturation</label>
+                <span className="text-ink font-bold">{selectedSwatch.hsl.s}%</span>
               </div>
               <input
                 id="sat-slider"
@@ -283,15 +295,15 @@ export const Inspector: React.FC<InspectorProps> = ({
                 max={100}
                 value={selectedSwatch.hsl.s}
                 onChange={(e) => handleHslChange('s', Number(e.target.value))}
-                className="w-full h-2 bg-paper border border-rule accent-ink cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-blue"
+                className="w-full h-2.5 bg-paper border-2 border-ink accent-ink cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-blue"
               />
             </div>
 
             {/* Lightness */}
             <div>
               <div className="flex justify-between items-center text-xs font-mono mb-1">
-                <label htmlFor="light-slider" className="text-muted uppercase">Lightness</label>
-                <span className="text-ink font-semibold">{selectedSwatch.hsl.l}%</span>
+                <label htmlFor="light-slider" className="text-ink font-bold uppercase">Lightness</label>
+                <span className="text-ink font-bold">{selectedSwatch.hsl.l}%</span>
               </div>
               <input
                 id="light-slider"
@@ -300,7 +312,7 @@ export const Inspector: React.FC<InspectorProps> = ({
                 max={100}
                 value={selectedSwatch.hsl.l}
                 onChange={(e) => handleHslChange('l', Number(e.target.value))}
-                className="w-full h-2 bg-paper border border-rule accent-ink cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-blue"
+                className="w-full h-2.5 bg-paper border-2 border-ink accent-ink cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-blue"
               />
             </div>
           </div>
@@ -312,20 +324,21 @@ export const Inspector: React.FC<InspectorProps> = ({
         <button
           type="button"
           onClick={() => toggleSection('contrast')}
-          className="w-full flex items-center justify-between font-display font-semibold text-sm tracking-wide uppercase text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-blue text-left"
+          className="w-full flex items-center justify-between font-mono font-bold text-xs tracking-wider uppercase text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-blue text-left"
           aria-expanded={!collapsedSections.contrast}
         >
           <span className="flex items-center gap-2">
+            <span className="w-2 h-2 bg-signal-red inline-block" aria-hidden="true" />
             <span>03</span> WCAG 2.2 Contrast Checker
           </span>
-          {collapsedSections.contrast ? <ChevronDown className="w-4 h-4" /> : <ChevronUp className="w-4 h-4" />}
+          <ChevronDown className={`w-4 h-4 accordion-chevron ${!collapsedSections.contrast ? 'is-open' : ''}`} />
         </button>
 
         {!collapsedSections.contrast && (
           <div className="space-y-4 pt-3">
             {/* Background selection */}
             <div>
-              <span className="block text-xs font-mono uppercase text-muted mb-2">Test Background:</span>
+              <span className="block text-xs font-mono font-bold uppercase text-muted mb-2">Test Background:</span>
               <div className="flex flex-wrap gap-2">
                 {[
                   { name: 'White', hex: '#FFFFFF' },
@@ -339,14 +352,14 @@ export const Inspector: React.FC<InspectorProps> = ({
                       key={idx}
                       type="button"
                       onClick={() => setContrastBgHex(bg.hex)}
-                      className={`tactile-press inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-mono border ${
+                      className={`tactile-press inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-mono font-bold border-2 ${
                         isBgSelected
                           ? 'border-ink bg-ink text-white ring-1 ring-ink'
-                          : 'border-rule bg-paper text-ink hover:border-ink'
+                          : 'border-ink bg-paper text-ink hover:bg-white'
                       }`}
                     >
                       <span
-                        className="w-2.5 h-2.5 border border-rule inline-block"
+                        className="w-2.5 h-2.5 border border-ink inline-block"
                         style={{ backgroundColor: bg.hex }}
                       />
                       <span>{bg.name}</span>
@@ -358,28 +371,30 @@ export const Inspector: React.FC<InspectorProps> = ({
 
             {/* Live Contrast Simulation Box */}
             <div
-              className="p-4 border border-rule transition-colors duration-fast"
+              className="p-4 border-2 border-ink transition-colors duration-fast"
               style={{ backgroundColor: contrastBgHex, color: contrastFgHex }}
             >
-              <div className="flex items-baseline justify-between mb-2 pb-2 border-b border-rule/30">
-                <span className="font-mono text-2xl font-bold">{contrastRatio.toFixed(2)}:1</span>
-                <span className="font-mono text-xs uppercase opacity-80">Relative Luminance</span>
+              <div className="flex items-baseline justify-between mb-2 pb-2 border-b-2 border-current/20">
+                <span className="font-mono text-3xl font-black">{contrastRatio.toFixed(2)}:1</span>
+                <span className="font-mono text-xs uppercase font-bold opacity-80">Relative Luminance</span>
               </div>
               <p className="text-sm font-normal mb-1">
                 Regular Body Text (16px): The quick brown fox jumps over the lazy dog.
               </p>
-              <p className="text-lg font-bold">
+              <p className="text-lg font-black tracking-tight">
                 Large Display Heading (18pt / 24px)
               </p>
             </div>
 
             {/* Compliance Matrix */}
             <div className="grid grid-cols-2 gap-2 text-xs font-mono">
-              <div className="p-2 border border-rule bg-paper flex items-center justify-between">
-                <span>Normal text AA (4.5:1)</span>
+              <div className="p-2.5 border-2 border-ink bg-paper flex items-center justify-between">
+                <span className="font-bold">Normal text AA (4.5:1)</span>
                 <span
-                  className={`inline-flex items-center gap-1 px-1.5 py-0.5 text-[11px] font-bold ${
-                    wcagResults.normalAA ? 'text-success' : 'text-error'
+                  className={`inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-bold border-2 ${
+                    wcagResults.normalAA
+                      ? 'border-ink bg-ink text-acid-lime'
+                      : 'border-ink/40 bg-white text-error'
                   }`}
                 >
                   {wcagResults.normalAA ? (
@@ -394,11 +409,13 @@ export const Inspector: React.FC<InspectorProps> = ({
                 </span>
               </div>
 
-              <div className="p-2 border border-rule bg-paper flex items-center justify-between">
-                <span>Normal text AAA (7.0:1)</span>
+              <div className="p-2.5 border-2 border-ink bg-paper flex items-center justify-between">
+                <span className="font-bold">Normal text AAA (7.0:1)</span>
                 <span
-                  className={`inline-flex items-center gap-1 px-1.5 py-0.5 text-[11px] font-bold ${
-                    wcagResults.normalAAA ? 'text-success' : 'text-error'
+                  className={`inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-bold border-2 ${
+                    wcagResults.normalAAA
+                      ? 'border-ink bg-ink text-acid-lime'
+                      : 'border-ink/40 bg-white text-error'
                   }`}
                 >
                   {wcagResults.normalAAA ? (
@@ -413,11 +430,13 @@ export const Inspector: React.FC<InspectorProps> = ({
                 </span>
               </div>
 
-              <div className="p-2 border border-rule bg-paper flex items-center justify-between">
-                <span>Large text AA (3.0:1)</span>
+              <div className="p-2.5 border-2 border-ink bg-paper flex items-center justify-between">
+                <span className="font-bold">Large text AA (3.0:1)</span>
                 <span
-                  className={`inline-flex items-center gap-1 px-1.5 py-0.5 text-[11px] font-bold ${
-                    wcagResults.largeAA ? 'text-success' : 'text-error'
+                  className={`inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-bold border-2 ${
+                    wcagResults.largeAA
+                      ? 'border-ink bg-ink text-acid-lime'
+                      : 'border-ink/40 bg-white text-error'
                   }`}
                 >
                   {wcagResults.largeAA ? (
@@ -432,11 +451,13 @@ export const Inspector: React.FC<InspectorProps> = ({
                 </span>
               </div>
 
-              <div className="p-2 border border-rule bg-paper flex items-center justify-between">
-                <span>Large text AAA (4.5:1)</span>
+              <div className="p-2.5 border-2 border-ink bg-paper flex items-center justify-between">
+                <span className="font-bold">Large text AAA (4.5:1)</span>
                 <span
-                  className={`inline-flex items-center gap-1 px-1.5 py-0.5 text-[11px] font-bold ${
-                    wcagResults.largeAAA ? 'text-success' : 'text-error'
+                  className={`inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-bold border-2 ${
+                    wcagResults.largeAAA
+                      ? 'border-ink bg-ink text-acid-lime'
+                      : 'border-ink/40 bg-white text-error'
                   }`}
                 >
                   {wcagResults.largeAAA ? (
@@ -460,29 +481,30 @@ export const Inspector: React.FC<InspectorProps> = ({
         <button
           type="button"
           onClick={() => toggleSection('gradient')}
-          className="w-full flex items-center justify-between font-display font-semibold text-sm tracking-wide uppercase text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-blue text-left"
+          className="w-full flex items-center justify-between font-mono font-bold text-xs tracking-wider uppercase text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-blue text-left"
           aria-expanded={!collapsedSections.gradient}
         >
           <span className="flex items-center gap-2">
+            <span className="w-2 h-2 bg-signal-red inline-block" aria-hidden="true" />
             <span>04</span> Gradient Builder
           </span>
-          {collapsedSections.gradient ? <ChevronDown className="w-4 h-4" /> : <ChevronUp className="w-4 h-4" />}
+          <ChevronDown className={`w-4 h-4 accordion-chevron ${!collapsedSections.gradient ? 'is-open' : ''}`} />
         </button>
 
         {!collapsedSections.gradient && (
           <div className="space-y-3 pt-3">
             {/* Live Gradient Preview Box */}
             <div
-              className="h-20 w-full border border-rule transition-all duration-fast flex items-end justify-between p-2"
+              className="h-20 w-full border-2 border-ink transition-all duration-fast flex items-end justify-between p-2"
               style={{ background: gradientCssString }}
             >
-              <span className="bg-ink/80 text-white font-mono text-[10px] px-1.5 py-0.5">
+              <span className="bg-ink text-white font-mono text-[10px] font-bold px-2 py-0.5 border border-ink">
                 {gradientConfig.type === 'linear' ? `${gradientConfig.angle}°` : 'RADIAL'}
               </span>
               <button
                 type="button"
                 onClick={() => copy(gradientCssString, 'GRADIENT')}
-                className="tactile-press bg-white/90 hover:bg-white text-ink text-xs font-mono px-2 py-1 border border-ink flex items-center gap-1 shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-blue"
+                className="tactile-press bg-white hover:bg-ink hover:text-white text-ink text-xs font-mono font-bold px-2.5 py-1 border-2 border-ink flex items-center gap-1 shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-blue transition-colors"
               >
                 {copiedText === 'GRADIENT' ? (
                   <>
@@ -500,11 +522,11 @@ export const Inspector: React.FC<InspectorProps> = ({
 
             {/* Gradient Type & Angle Controls */}
             <div className="flex items-center gap-3">
-              <div className="flex border border-rule" role="radiogroup" aria-label="Gradient type">
+              <div className="flex border-2 border-ink" role="radiogroup" aria-label="Gradient type">
                 <button
                   type="button"
                   onClick={() => setGradientConfig((prev) => ({ ...prev, type: 'linear' }))}
-                  className={`tactile-press px-3 py-1.5 text-xs font-mono uppercase ${
+                  className={`tactile-press px-3 py-1.5 text-xs font-mono font-bold uppercase ${
                     gradientConfig.type === 'linear' ? 'bg-ink text-white' : 'bg-paper text-ink hover:bg-white'
                   }`}
                 >
@@ -513,7 +535,7 @@ export const Inspector: React.FC<InspectorProps> = ({
                 <button
                   type="button"
                   onClick={() => setGradientConfig((prev) => ({ ...prev, type: 'radial' }))}
-                  className={`tactile-press px-3 py-1.5 text-xs font-mono uppercase border-l border-rule ${
+                  className={`tactile-press px-3 py-1.5 text-xs font-mono font-bold uppercase border-l-2 border-ink ${
                     gradientConfig.type === 'radial' ? 'bg-ink text-white' : 'bg-paper text-ink hover:bg-white'
                   }`}
                 >
@@ -531,21 +553,21 @@ export const Inspector: React.FC<InspectorProps> = ({
                     onChange={(e) =>
                       setGradientConfig((prev) => ({ ...prev, angle: Number(e.target.value) }))
                     }
-                    className="w-full h-2 bg-paper border border-rule accent-ink cursor-pointer"
+                    className="w-full h-2.5 bg-paper border-2 border-ink accent-ink cursor-pointer"
                     aria-label="Gradient angle in degrees"
                   />
-                  <span className="font-mono text-xs w-8 text-right">{gradientConfig.angle}°</span>
+                  <span className="font-mono text-xs font-bold w-10 text-right">{gradientConfig.angle}°</span>
                 </div>
               )}
             </div>
 
             {/* Gradient Stops Configuration */}
             <div>
-              <span className="block text-xs font-mono uppercase text-muted mb-2">Palette Stops:</span>
+              <span className="block text-xs font-mono font-bold uppercase text-muted mb-2">Palette Stops:</span>
               <div className="space-y-2">
                 {gradientConfig.stops.map((stop, sIndex) => (
-                  <div key={stop.id} className="flex items-center gap-2 bg-paper p-2 border border-rule">
-                    <span className="font-mono text-xs w-6 text-muted">#{sIndex + 1}</span>
+                  <div key={stop.id} className="flex items-center gap-2 bg-paper p-2 border-2 border-ink">
+                    <span className="font-mono text-xs font-bold w-6 text-ink">#{sIndex + 1}</span>
                     <select
                       value={stop.colorId}
                       onChange={(e) => {
@@ -559,7 +581,7 @@ export const Inspector: React.FC<InspectorProps> = ({
                           }));
                         }
                       }}
-                      className="px-2 py-1 bg-white border border-rule text-xs font-mono text-ink focus:outline-none"
+                      className="px-2 py-1 bg-white border-2 border-ink text-xs font-mono font-bold text-ink focus:outline-none"
                     >
                       {palette.map((p, idx) => (
                         <option key={p.id} value={p.id}>
@@ -580,10 +602,10 @@ export const Inspector: React.FC<InspectorProps> = ({
                           stops: prev.stops.map((st) => (st.id === stop.id ? { ...st, position: pos } : st)),
                         }));
                       }}
-                      className="flex-1 h-2 bg-white border border-rule accent-ink cursor-pointer"
+                      className="flex-1 h-2.5 bg-white border-2 border-ink accent-ink cursor-pointer"
                       aria-label={`Position for stop ${sIndex + 1}`}
                     />
-                    <span className="font-mono text-xs w-8 text-right">{stop.position}%</span>
+                    <span className="font-mono text-xs font-bold w-8 text-right">{stop.position}%</span>
                   </div>
                 ))}
               </div>
@@ -605,7 +627,7 @@ export const Inspector: React.FC<InspectorProps> = ({
                       stops: [...prev.stops, newStop],
                     }));
                   }}
-                  className="mt-2 text-xs font-mono uppercase text-ink hover:text-signal-red flex items-center gap-1"
+                  className="mt-2 text-xs font-mono uppercase font-bold text-ink hover:text-signal-red flex items-center gap-1 transition-colors"
                 >
                   + Add Stop
                 </button>
@@ -620,25 +642,26 @@ export const Inspector: React.FC<InspectorProps> = ({
         <button
           type="button"
           onClick={() => toggleSection('export')}
-          className="w-full flex items-center justify-between font-display font-semibold text-sm tracking-wide uppercase text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-blue text-left"
+          className="w-full flex items-center justify-between font-mono font-bold text-xs tracking-wider uppercase text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-blue text-left"
           aria-expanded={!collapsedSections.export}
         >
           <span className="flex items-center gap-2">
+            <span className="w-2 h-2 bg-signal-red inline-block" aria-hidden="true" />
             <span>05</span> Export System
           </span>
-          {collapsedSections.export ? <ChevronDown className="w-4 h-4" /> : <ChevronUp className="w-4 h-4" />}
+          <ChevronDown className={`w-4 h-4 accordion-chevron ${!collapsedSections.export ? 'is-open' : ''}`} />
         </button>
 
         {!collapsedSections.export && (
           <div className="space-y-3 pt-3">
-            <div className="flex items-center justify-between">
-              <div className="flex border border-rule" role="tablist">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div className="flex border-2 border-ink" role="tablist">
                 <button
                   type="button"
                   role="tab"
                   aria-selected={exportFormat === 'css'}
                   onClick={() => setExportFormat('css')}
-                  className={`tactile-press px-3 py-1.5 text-xs font-mono uppercase ${
+                  className={`tactile-press px-3 py-1.5 text-xs font-mono font-bold uppercase ${
                     exportFormat === 'css' ? 'bg-ink text-white' : 'bg-paper text-ink hover:bg-white'
                   }`}
                 >
@@ -649,7 +672,7 @@ export const Inspector: React.FC<InspectorProps> = ({
                   role="tab"
                   aria-selected={exportFormat === 'json'}
                   onClick={() => setExportFormat('json')}
-                  className={`tactile-press px-3 py-1.5 text-xs font-mono uppercase border-l border-rule ${
+                  className={`tactile-press px-3 py-1.5 text-xs font-mono font-bold uppercase border-l-2 border-ink ${
                     exportFormat === 'json' ? 'bg-ink text-white' : 'bg-paper text-ink hover:bg-white'
                   }`}
                 >
@@ -661,7 +684,7 @@ export const Inspector: React.FC<InspectorProps> = ({
                 <button
                   type="button"
                   onClick={() => copy(exportContent, 'EXPORT')}
-                  className="tactile-press px-2.5 py-1.5 bg-paper border border-rule hover:border-ink text-ink text-xs font-mono flex items-center gap-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-blue"
+                  className="tactile-press px-3 py-1.5 bg-paper border-2 border-ink hover:bg-ink hover:text-white text-ink text-xs font-mono font-bold uppercase flex items-center gap-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-blue transition-colors"
                 >
                   {copiedText === 'EXPORT' ? (
                     <>
@@ -685,7 +708,7 @@ export const Inspector: React.FC<InspectorProps> = ({
                       exportFormat === 'css' ? 'text/css' : 'application/json'
                     )
                   }
-                  className="tactile-press px-2.5 py-1.5 bg-ink text-white text-xs font-mono flex items-center gap-1.5 hover:bg-signal-red focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-blue"
+                  className="tactile-press px-3 py-1.5 bg-ink text-white text-xs font-mono font-bold uppercase border-2 border-ink flex items-center gap-1.5 hover:bg-signal-red hover:border-signal-red focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-blue transition-colors"
                   title="Download exported tokens file"
                 >
                   <Download className="w-3.5 h-3.5" />
@@ -698,7 +721,7 @@ export const Inspector: React.FC<InspectorProps> = ({
               readOnly
               value={exportContent}
               rows={6}
-              className="w-full p-2.5 bg-paper border border-rule font-mono text-xs text-ink focus:outline-none resize-none leading-relaxed"
+              className="w-full p-2.5 bg-paper border-2 border-ink font-mono text-xs text-ink focus:outline-none resize-none leading-relaxed"
               aria-label="Exported code preview"
             />
           </div>

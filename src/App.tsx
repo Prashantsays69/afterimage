@@ -2,23 +2,31 @@ import React, { useState } from 'react';
 import { Header } from './components/Header';
 import { LandingPage } from './components/LandingPage';
 import { Workspace } from './components/Workspace';
+import { PrivacyPolicy } from './components/PrivacyPolicy';
+import { TermsAndConditions } from './components/TermsAndConditions';
 import { SampleImage } from './data/samples';
 
 export const App: React.FC = () => {
-  const [currentView, setCurrentView] = useState<'landing' | 'workspace'>('landing');
+  const [currentView, setCurrentView] = useState<'landing' | 'workspace' | 'privacy' | 'terms'>('landing');
   const [activeSample, setActiveSample] = useState<SampleImage | null>(null);
   const [isExportOpen, setIsExportOpen] = useState<boolean>(false);
   const [isShortcutsOpen, setIsShortcutsOpen] = useState<boolean>(false);
 
-  const handleNavigate = (view: 'landing' | 'workspace') => {
+  const scrollToTop = () => {
+    const prefersReducedMotion = typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    window.scrollTo({ top: 0, behavior: prefersReducedMotion ? 'auto' : 'smooth' });
+  };
+
+  const handleNavigate = (view: 'landing' | 'workspace' | 'privacy' | 'terms') => {
     setCurrentView(view);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    scrollToTop();
   };
 
   const handleSelectSample = (sample: SampleImage) => {
     setActiveSample(sample);
     setCurrentView('workspace');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    scrollToTop();
   };
 
   const handleNewImage = () => {
@@ -50,14 +58,16 @@ export const App: React.FC = () => {
       />
 
       {/* Main View Container */}
-      <div id="main-content" className="flex-1 flex flex-col">
+      <div key={currentView} id="main-content" className="flex-1 flex flex-col animate-view-fade">
         {currentView === 'landing' ? (
           <LandingPage
             onOpenWorkspace={() => handleNavigate('workspace')}
             onSelectSample={handleSelectSample}
             onNewImage={handleNewImage}
+            onOpenPrivacy={() => handleNavigate('privacy')}
+            onOpenTerms={() => handleNavigate('terms')}
           />
-        ) : (
+        ) : currentView === 'workspace' ? (
           <Workspace
             initialSample={activeSample}
             onNavigateHome={() => handleNavigate('landing')}
@@ -65,6 +75,16 @@ export const App: React.FC = () => {
             setIsExportOpen={setIsExportOpen}
             isShortcutsOpen={isShortcutsOpen}
             setIsShortcutsOpen={setIsShortcutsOpen}
+          />
+        ) : currentView === 'privacy' ? (
+          <PrivacyPolicy
+            onNavigateHome={() => handleNavigate('landing')}
+            onOpenWorkspace={() => handleNavigate('workspace')}
+          />
+        ) : (
+          <TermsAndConditions
+            onNavigateHome={() => handleNavigate('landing')}
+            onOpenWorkspace={() => handleNavigate('workspace')}
           />
         )}
       </div>

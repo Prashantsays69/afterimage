@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { SampleImage, SAMPLE_IMAGES } from '../data/samples';
 import { ArrowRight } from 'lucide-react';
 import { HeroSpecimen } from './HeroArtworkCard';
+import { BrandLogo } from './BrandLogo';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 import { getContrastRatio } from '../utils/color';
 
@@ -30,12 +31,16 @@ interface LandingPageProps {
   onOpenWorkspace: () => void;
   onSelectSample: (sample: SampleImage) => void;
   onNewImage?: () => void;
+  onOpenPrivacy?: () => void;
+  onOpenTerms?: () => void;
 }
 
 export const LandingPage: React.FC<LandingPageProps> = ({
   onOpenWorkspace,
   onSelectSample,
   onNewImage,
+  onOpenPrivacy,
+  onOpenTerms,
 }) => {
   const [activeHeroSampleIndex, setActiveHeroSampleIndex] = useState(0);
   const [selectedProofSwatchIndex, setSelectedProofSwatchIndex] = useState(0);
@@ -83,23 +88,26 @@ export const LandingPage: React.FC<LandingPageProps> = ({
           className="mx-auto max-w-content"
           style={{ padding: 'var(--page-gutter)' }}
         >
-          {/* Masthead Bar — Restrained, Functional Architectural Folio */}
-          <div className="animate-hero-eyebrow flex flex-wrap items-center justify-between gap-4 py-2 sm:py-2.5 border-b border-rule">
+          {/* Masthead Bar — Refined Architectural Folio */}
+          <div className="animate-hero-eyebrow flex flex-wrap items-center justify-between gap-3 py-2 sm:py-2.5 border-b border-rule font-mono text-xs">
             <div className="flex items-center gap-3">
-              <span className="font-mono text-xs font-bold uppercase tracking-wider text-ink flex items-center gap-2">
+              <span className="font-bold uppercase tracking-wider text-ink flex items-center gap-2">
                 <span className="w-2 h-2 bg-signal-red inline-block flex-shrink-0" aria-hidden="true" />
                 <span>IMAGE → COLOR SYSTEM</span>
               </span>
+              <span className="hidden sm:inline text-muted font-normal">•</span>
+              <span className="hidden sm:inline text-muted uppercase text-[11px] tracking-wider font-semibold">
+                SPECIMEN FOLIO // VOL. 01
+              </span>
             </div>
 
-            <div className="flex items-center gap-4 text-muted font-mono text-[11px] uppercase tracking-wider">
-              <span className="flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 bg-success" aria-hidden="true" />
-                <span className="hidden sm:inline">Local Browser Engine •</span> Zero Tracking
+            <div className="flex items-center gap-3 text-muted text-[11px] uppercase tracking-wider">
+              <span className="flex items-center gap-1.5 font-bold text-ink">
+                <span className="w-1.5 h-1.5 bg-success rounded-full" aria-hidden="true" />
+                <span className="hidden md:inline">BROWSER ENGINE:</span> CLIENT-SIDE
               </span>
-              <span className="text-ink font-semibold border-l border-rule pl-4 hidden md:inline">
-                VOL. 03 // 2026
-              </span>
+              <span>•</span>
+              <span>ZERO TRACKING</span>
             </div>
           </div>
 
@@ -109,9 +117,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({
               ═══════════════════════════════════════════════════════════ */}
           <div className="border-2 border-ink bg-paper mt-3 sm:mt-4">
             
-            {/* Tier 1: Specimen Folio Index Ledger */}
-            <div className="border-b-2 border-ink">
-              <div className="grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x-2 divide-ink bg-paper">
+            {/* Tier 1: Specimen Folio Index Ledger — Sleek 3-Column Strip across viewports */}
+            <div className="border-b-2 border-ink animate-hero-specimen-index">
+              <div className="grid grid-cols-3 divide-x-2 divide-ink bg-paper">
                 {SAMPLE_IMAGES.map((sample, idx) => {
                   const isSelected = idx === activeHeroSampleIndex;
                   return (
@@ -119,28 +127,31 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                       key={sample.id}
                       type="button"
                       onClick={() => setActiveHeroSampleIndex(idx)}
-                      className={`tactile-press p-2.5 sm:p-3 text-left transition-colors flex flex-col justify-between ${
+                      className={`tactile-press p-2 sm:p-3 text-left transition-colors flex flex-col justify-between ${
                         isSelected
                           ? 'bg-ink text-white'
                           : 'bg-paper hover:bg-white text-ink'
                       }`}
                       aria-label={`Switch hero specimen to ${sample.title}`}
                     >
-                      <div className="flex items-center justify-between font-mono text-[9px] sm:text-[10px] uppercase tracking-wider mb-1">
+                      <div className="flex items-center justify-between font-mono text-[9px] sm:text-[10px] uppercase tracking-wider mb-0.5 sm:mb-1">
                         <span className={isSelected ? 'text-acid-lime font-bold' : 'text-muted'}>
-                          0{idx + 1} // {sample.category}
+                          0{idx + 1} <span className="hidden md:inline">// {sample.category}</span>
                         </span>
-                        {isSelected && <span className="w-1.5 h-1.5 bg-signal-red inline-block" />}
+                        {isSelected && <span className="w-1.5 h-1.5 bg-signal-red inline-block flex-shrink-0" />}
                       </div>
-                      <div className="font-display text-xs sm:text-sm font-bold truncate mb-2">
+                      <div className="font-display text-[11px] sm:text-xs md:text-sm font-bold truncate mb-1 sm:mb-2">
                         {sample.title}
                       </div>
                       <div className="flex h-1.5 w-full border border-ink/30 overflow-hidden">
-                        {sample.palette.map((swatch) => (
+                        {sample.palette.map((swatch, sIdx) => (
                           <div
                             key={swatch.id}
-                            style={{ backgroundColor: swatch.hex }}
-                            className="flex-1 h-full"
+                            style={{
+                              backgroundColor: swatch.hex,
+                              '--swatch-idx': sIdx,
+                            } as React.CSSProperties}
+                            className="flex-1 h-full specimen-swatch-entrance"
                           />
                         ))}
                       </div>
@@ -160,22 +171,28 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                 <div className="select-none">
                   <h1 className="font-display font-black uppercase tracking-[-0.04em] leading-[0.85]">
                     {/* Line 1: In Ink, sits on paper canopy */}
-                    <span className="block text-3xl sm:text-5xl md:text-6xl lg:text-[3.8rem] xl:text-[4.6rem] text-ink whitespace-normal sm:whitespace-nowrap">
-                      Find the colors
+                    <span className="editorial-mask block">
+                      <span className="animate-hero-headline-1 hero-unmask-line hero-unmask-line-1 block text-3xl sm:text-5xl md:text-6xl lg:text-[3.8rem] xl:text-[4.6rem] text-ink whitespace-normal sm:whitespace-nowrap">
+                        Find the colors
+                      </span>
                     </span>
                     {/* Line 2: In Signal Red — The Dedicated Collision Vector crossing the artwork boundary */}
-                    <span className="block text-4xl sm:text-6xl md:text-7xl lg:text-[4.8rem] xl:text-[5.8rem] text-signal-red mt-1 sm:mt-1.5 whitespace-normal sm:whitespace-nowrap lg:[text-shadow:_1.5px_1.5px_0_#151515]">
-                      hiding in your
+                    <span className="editorial-mask block mt-1 sm:mt-1.5">
+                      <span className="animate-hero-headline-2 hero-unmask-line hero-unmask-line-2 block text-4xl sm:text-6xl md:text-7xl lg:text-[4.8rem] xl:text-[5.8rem] text-signal-red whitespace-normal sm:whitespace-nowrap lg:[text-shadow:_1.5px_1.5px_0_#151515]">
+                        hiding in your
+                      </span>
                     </span>
                     {/* Line 3: In Ink, grounds the composition */}
-                    <span className="block text-3xl sm:text-5xl md:text-6xl lg:text-[3.8rem] xl:text-[4.6rem] text-ink mt-1 sm:mt-1.5 whitespace-normal sm:whitespace-nowrap">
-                      images.
+                    <span className="editorial-mask block mt-1 sm:mt-1.5">
+                      <span className="animate-hero-headline-3 hero-unmask-line hero-unmask-line-3 block text-3xl sm:text-5xl md:text-6xl lg:text-[3.8rem] xl:text-[4.6rem] text-ink whitespace-normal sm:whitespace-nowrap">
+                        images.
+                      </span>
                     </span>
                   </h1>
                 </div>
 
                 {/* Anchored Supporting Editorial Copy */}
-                <div className="max-w-md mt-5 lg:mt-6 pt-3.5 border-t-2 border-ink bg-paper/95 p-1 pointer-events-auto">
+                <div className="animate-hero-support max-w-md mt-5 lg:mt-6 pt-3.5 border-t-2 border-ink bg-paper/95 p-1 pointer-events-auto">
                   <p className="font-body text-xs sm:text-sm text-ink/80 leading-relaxed font-medium">
                     Deterministic color extraction from architectural and fine art imagery. Proportional harmonies, perceptual weights, and exportable tokens for real interfaces.
                   </p>
@@ -200,7 +217,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
             </div>
 
             {/* Tier 3: The Functional Instrument Control Zone — Aligned Monolithic Ledger */}
-            <div className="grid grid-cols-1 md:grid-cols-12 divide-y-2 md:divide-y-0 md:divide-x-2 divide-ink bg-paper font-mono">
+            <div className="animate-hero-actions grid grid-cols-1 md:grid-cols-12 divide-y-2 md:divide-y-0 md:divide-x-2 divide-ink bg-paper font-mono">
               
               {/* Pillar 1: Dominant Chromatic Tone Meter */}
               <div className="md:col-span-5 lg:col-span-4 p-4 sm:p-5 flex flex-col justify-between bg-paper">
@@ -209,7 +226,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                   <span className="text-signal-red font-bold">CALIBRATED</span>
                 </div>
 
-                <div className="flex items-center gap-4">
+                <div key={heroSample.id} className="flex items-center gap-4 study-content-fade">
                   <div
                     className="w-14 h-14 sm:w-16 sm:h-16 border-2 border-ink flex-shrink-0 relative overflow-hidden bg-ink/10"
                     style={{ backgroundColor: heroSample.palette[0]?.hex }}
@@ -289,26 +306,32 @@ export const LandingPage: React.FC<LandingPageProps> = ({
           className="mx-auto max-w-content py-16 sm:py-20 lg:py-24"
           style={{ padding: 'var(--page-gutter)' }}
         >
-          {/* Section Masthead: Asymmetrical Editorial Heading */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-end pb-8 mb-10 sm:mb-12 border-b-2 border-ink">
-            <div className="lg:col-span-8">
-              <div className="flex items-center gap-2.5 mb-3.5 font-mono text-xs uppercase tracking-widest text-signal-red font-bold">
-                <span className="w-2 h-2 bg-signal-red inline-block flex-shrink-0" aria-hidden="true" />
-                <span>§ 02 // CHROMATIC SPECTRUM SHEET</span>
+          {/* Section Masthead: Asymmetrical Editorial Heading with architectural horizontal rule draw */}
+          <div className="relative pb-8 mb-10 sm:mb-12">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-end">
+              <div className="lg:col-span-8">
+                <h2 className="font-display font-black text-3xl sm:text-4xl lg:text-5xl text-ink tracking-tight leading-[1.05]">
+                  <span className="editorial-mask block">
+                    <span className="section-headline-reveal block">From raw pixels to calibrated system.</span>
+                  </span>
+                </h2>
               </div>
-              <h2 className="font-display font-black text-3xl sm:text-4xl lg:text-5xl text-ink tracking-tight leading-[1.05] pt-0.5">
-                From raw pixels to calibrated system.
-              </h2>
+              <div className="lg:col-span-4 lg:text-right flex flex-col justify-between items-start lg:items-end">
+                <div className="font-mono text-xs text-signal-red font-bold uppercase tracking-widest flex items-center gap-2 mb-2">
+                  <span className="w-2 h-2 bg-signal-red inline-block flex-shrink-0" aria-hidden="true" />
+                  <span>§ 02 // CHROMATIC SPECTRUM SHEET</span>
+                </div>
+                <p className="font-body text-sm sm:text-base text-ink/75 leading-relaxed">
+                  Spatial pixel sampling computes dominant mass, chromatic accents, and WCAG-tested tokens directly in your browser.
+                </p>
+              </div>
             </div>
-            <div className="lg:col-span-4 lg:text-right">
-              <p className="font-body text-sm sm:text-base text-ink/75 leading-relaxed">
-                Spatial pixel sampling computes dominant mass, chromatic accents, and WCAG-tested tokens directly in your browser.
-              </p>
-            </div>
+            {/* The intentional architectural rule draw from left */}
+            <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-ink scroll-reveal-rule" />
           </div>
 
           {/* Unified Broadsheet Chromatic Analysis Spread */}
-          <div className="border-2 border-ink bg-white">
+          <div key={heroSample.id} className="border-2 border-ink bg-white study-content-fade">
             
             {/* Broadsheet Top Ledger */}
             <div className="grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x-2 divide-ink border-b-2 border-ink bg-paper/60 font-mono text-xs">
@@ -334,7 +357,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
             <div className="hidden lg:block">
               {/* Main Event: Monumental Proportional Chromatic Spectrum Field */}
               <div
-                className="flex flex-row h-[320px] divide-x-2 divide-ink bg-white"
+                className="flex flex-row h-[320px] divide-x-2 divide-ink bg-white scroll-reveal-meter"
                 role="list"
                 aria-label={`${heroSample.title} proportional chromatic spectrum`}
               >
@@ -349,12 +372,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                       role="listitem"
                       type="button"
                       onClick={() => onSelectSample(heroSample)}
-                      className="h-full p-5 xl:p-6 flex flex-col justify-between items-stretch group cursor-pointer text-left relative overflow-hidden transition-all duration-fast select-none tactile-press focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-blue"
+                      className="h-full p-5 xl:p-6 flex flex-col justify-between items-stretch group cursor-pointer text-left relative overflow-hidden transition-all duration-fast select-none tactile-press focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-blue spectrum-column-reveal"
                       style={{
                         backgroundColor: swatch.hex,
                         flex: `${Math.max(mass, 10)} 0 0%`,
                         color: textColor,
-                      }}
+                        '--col-idx': idx,
+                      } as React.CSSProperties}
                       title={`Open workspace with ${swatch.hex} (${mass}% mass)`}
                     >
                       {/* Top Annotation: Tone Index & Mass Percentage */}
@@ -447,7 +471,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
             <div className="block lg:hidden bg-white">
               {/* Horizontal Proportional Spectrum Band with 6 selectable segments */}
               <div
-                className="h-20 sm:h-24 w-full flex flex-row divide-x-2 divide-ink border-b-2 border-ink overflow-hidden"
+                className="h-24 sm:h-28 w-full flex flex-row divide-x-2 divide-ink border-b-2 border-ink overflow-hidden"
                 role="tablist"
                 aria-label={`${heroSample.title} color selection`}
               >
@@ -465,14 +489,15 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                       onClick={() => setSelectedProofSwatchIndex(idx)}
                       aria-selected={isSelected}
                       aria-label={`Tone 0${idx + 1}: ${swatch.hex}, ${mass}% mass, ${roleLabel}`}
-                      className={`h-full relative flex flex-col justify-between p-2 sm:p-2.5 transition-all select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-blue tactile-press ${
-                        isSelected ? 'ring-2 ring-inset ring-ink' : 'opacity-90 hover:opacity-100'
+                      className={`h-full relative flex flex-col justify-between p-2 sm:p-2.5 transition-all select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-blue tactile-press spectrum-column-reveal ${
+                        isSelected ? 'ring-4 ring-inset ring-ink z-10' : 'opacity-90 hover:opacity-100'
                       }`}
                       style={{
                         backgroundColor: swatch.hex,
                         flex: `${Math.max(mass, 10)} 0 0%`,
                         color: textColor,
-                      }}
+                        '--col-idx': idx,
+                      } as React.CSSProperties}
                     >
                       <div className="font-mono text-[9px] sm:text-[10px] font-black opacity-80 uppercase leading-none">
                         0{idx + 1}
@@ -631,20 +656,26 @@ export const LandingPage: React.FC<LandingPageProps> = ({
           style={{ padding: 'var(--page-gutter)' }}
         >
           {/* Section Masthead: Distinctive Editorial Block */}
-          <div className="mb-10 sm:mb-14 max-w-4xl">
-            <div className="flex items-center gap-2.5 mb-3 font-mono text-xs uppercase tracking-widest text-signal-red font-bold">
-              <span className="w-2 h-2 bg-signal-red inline-block flex-shrink-0" aria-hidden="true" />
-              <span>§ 03 // WORKFLOW ARCHITECTURE</span>
+          <div className="mb-10 sm:mb-14 grid grid-cols-1 lg:grid-cols-12 gap-6 items-end">
+            <div className="lg:col-span-8">
+              <h2 className="font-display font-black text-3xl sm:text-5xl lg:text-6xl text-ink tracking-tight leading-[1.04]">
+                <span className="editorial-mask block">
+                  <span className="section-headline-reveal block">Three steps to a functional color system.</span>
+                </span>
+              </h2>
             </div>
-            <h2 className="font-display font-black text-3xl sm:text-5xl lg:text-6xl text-ink tracking-tight leading-[1.04] pt-0.5">
-              Three steps to a functional color system.
-            </h2>
-            <p className="font-body text-base sm:text-lg text-ink/75 leading-relaxed mt-4 max-w-2xl">
-              Deterministic browser-native transformation. From raw imagery to accessible token systems without leaving your device.
-            </p>
+            <div className="lg:col-span-4 lg:text-right flex flex-col justify-between items-start lg:items-end">
+              <div className="font-mono text-xs text-signal-red font-bold uppercase tracking-widest flex items-center gap-2 mb-2">
+                <span className="w-2 h-2 bg-signal-red inline-block flex-shrink-0" aria-hidden="true" />
+                <span>§ 03 // WORKFLOW ARCHITECTURE</span>
+              </div>
+              <p className="font-body text-base sm:text-lg text-ink/75 leading-relaxed">
+                Deterministic browser-native transformation. From raw imagery to accessible token systems without leaving your device.
+              </p>
+            </div>
           </div>
 
-          {/* Open Numbered Editorial Progression */}
+          {/* Open Architectural Broadsheet Ledger */}
           <div className="grid grid-cols-1 md:grid-cols-3 border-y-2 border-ink divide-y md:divide-y-0 md:divide-x-2 divide-ink bg-paper">
             
             {/* Step 01 */}
@@ -659,30 +690,56 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                   else onOpenWorkspace();
                 }
               }}
-              className="p-6 sm:p-8 lg:p-10 flex flex-col justify-between group hover:bg-white transition-colors cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-blue tactile-press"
+              style={{ '--step-idx': 0 } as React.CSSProperties}
+              className="workflow-step-card p-6 sm:p-8 lg:p-10 flex flex-col justify-between group hover:bg-white transition-colors cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-blue tactile-press"
               aria-label="Stage 01: Choose an image to extract palette"
             >
               <div>
-                <div className="flex items-baseline justify-between border-b border-ink/20 group-hover:border-ink/40 pb-4 mb-6 transition-colors">
-                  <span className="font-display font-black text-6xl sm:text-7xl lg:text-8xl text-ink tracking-tighter leading-none group-hover:text-signal-red transition-colors select-none">
-                    01
+                {/* Architectural Folio Tag Strip */}
+                <div className="flex items-center justify-between font-mono text-[10px] sm:text-xs uppercase tracking-widest text-muted border-b border-ink/20 pb-3 mb-6 transition-colors group-hover:border-ink/40">
+                  <span className="font-bold text-signal-red flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 bg-signal-red inline-block" aria-hidden="true" />
+                    <span>STAGE // INPUT</span>
                   </span>
-                  <span className="font-mono text-[10px] sm:text-xs font-bold px-2 py-0.5 border border-signal-red/30 text-signal-red group-hover:border-signal-red group-hover:bg-signal-red group-hover:text-white tracking-widest uppercase transition-colors">
-                    STAGE // INPUT
+                  <span className="text-ink font-semibold">01 / 03</span>
+                </div>
+
+                <div className="flex items-baseline justify-between mb-4">
+                  <span className="editorial-mask block">
+                    <span className="font-display font-black text-6xl sm:text-7xl lg:text-8xl text-ink tracking-tighter leading-none group-hover:text-signal-red transition-colors select-none workflow-num-reveal">
+                      01
+                    </span>
+                  </span>
+                  <span className="font-mono text-[10px] px-2 py-0.5 border border-ink/20 bg-paper/60 text-muted uppercase font-bold tracking-wider group-hover:bg-ink group-hover:text-acid-lime group-hover:border-ink transition-colors">
+                    CANVAS 2D
                   </span>
                 </div>
+
+                <div className="w-8 h-0.5 bg-signal-red mb-5 group-hover:w-14 transition-all duration-standard" aria-hidden="true" />
 
                 <h3 className="font-display font-black text-2xl lg:text-3xl text-ink mb-3 group-hover:text-signal-red transition-colors">
                   Choose an image
                 </h3>
 
                 <p className="font-body text-sm text-ink/75 leading-relaxed mb-6">
-                  Drop your file or pick a specimen. Pixels render directly to an offscreen canvas. Zero network transmission occurs, keeping your creative assets entirely private.
+                  Drop your file or pick a specimen. Pixels render directly to an offscreen canvas. Zero image network transmission occurs, keeping your creative assets entirely private.
                 </p>
+
+                {/* Technical Ledger Strip */}
+                <div className="mb-6 p-3 bg-paper/60 border border-ink/15 group-hover:bg-white group-hover:border-ink/30 transition-colors font-mono text-[10px] text-muted space-y-1">
+                  <div className="flex items-center justify-between">
+                    <span className="uppercase font-semibold">FORMATS:</span>
+                    <span className="text-ink font-bold">PNG, JPG, WEBP, SVG</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="uppercase font-semibold">PIPELINE:</span>
+                    <span className="text-ink font-bold">OFFSCREEN MEMORY</span>
+                  </div>
+                </div>
               </div>
 
               <div className="pt-4 border-t border-ink/20 group-hover:border-ink/40 font-mono text-xs text-muted flex items-center justify-between transition-colors">
-                <span>PNG, JPG, WEBP, SVG</span>
+                <span className="text-[11px] font-medium">PNG, JPG, WEBP, SVG</span>
                 <span className="font-bold text-ink group-hover:text-white group-hover:bg-ink px-2.5 py-1 border border-ink/20 group-hover:border-ink flex items-center gap-1.5 transition-colors text-[11px] sm:text-xs uppercase tracking-wider">
                   <span>Choose image</span>
                   <span className="group-hover:translate-x-0.5 transition-transform" aria-hidden="true">→</span>
@@ -701,18 +758,32 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                   onSelectSample(heroSample);
                 }
               }}
-              className="p-6 sm:p-8 lg:p-10 flex flex-col justify-between group hover:bg-white transition-colors cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-blue tactile-press"
+              style={{ '--step-idx': 1 } as React.CSSProperties}
+              className="workflow-step-card p-6 sm:p-8 lg:p-10 flex flex-col justify-between group hover:bg-white transition-colors cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-blue tactile-press"
               aria-label="Stage 02: Refine the palette in calibration bench"
             >
               <div>
-                <div className="flex items-baseline justify-between border-b border-ink/20 group-hover:border-ink/40 pb-4 mb-6 transition-colors">
-                  <span className="font-display font-black text-6xl sm:text-7xl lg:text-8xl text-ink tracking-tighter leading-none group-hover:text-signal-red transition-colors select-none">
-                    02
+                {/* Architectural Folio Tag Strip */}
+                <div className="flex items-center justify-between font-mono text-[10px] sm:text-xs uppercase tracking-widest text-muted border-b border-ink/20 pb-3 mb-6 transition-colors group-hover:border-ink/40">
+                  <span className="font-bold text-signal-red flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 bg-signal-red inline-block" aria-hidden="true" />
+                    <span>STAGE // CALIBRATE</span>
                   </span>
-                  <span className="font-mono text-[10px] sm:text-xs font-bold px-2 py-0.5 border border-signal-red/30 text-signal-red group-hover:border-signal-red group-hover:bg-signal-red group-hover:text-white tracking-widest uppercase transition-colors">
-                    STAGE // CALIBRATE
+                  <span className="text-ink font-semibold">02 / 03</span>
+                </div>
+
+                <div className="flex items-baseline justify-between mb-4">
+                  <span className="editorial-mask block">
+                    <span className="font-display font-black text-6xl sm:text-7xl lg:text-8xl text-ink tracking-tighter leading-none group-hover:text-signal-red transition-colors select-none workflow-num-reveal">
+                      02
+                    </span>
+                  </span>
+                  <span className="font-mono text-[10px] px-2 py-0.5 border border-ink/20 bg-paper/60 text-muted uppercase font-bold tracking-wider group-hover:bg-ink group-hover:text-acid-lime group-hover:border-ink transition-colors">
+                    WCAG 2.2 AA
                   </span>
                 </div>
+
+                <div className="w-8 h-0.5 bg-signal-red mb-5 group-hover:w-14 transition-all duration-standard" aria-hidden="true" />
 
                 <h3 className="font-display font-black text-2xl lg:text-3xl text-ink mb-3 group-hover:text-signal-red transition-colors">
                   Refine the palette
@@ -721,10 +792,22 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                 <p className="font-body text-sm text-ink/75 leading-relaxed mb-6">
                   Adjust HSL channels, reorder swatches, test contrast ratios against WCAG 2.2 AA/AAA standards, and preview harmonic gradient ramp transitions.
                 </p>
+
+                {/* Technical Ledger Strip */}
+                <div className="mb-6 p-3 bg-paper/60 border border-ink/15 group-hover:bg-white group-hover:border-ink/30 transition-colors font-mono text-[10px] text-muted space-y-1">
+                  <div className="flex items-center justify-between">
+                    <span className="uppercase font-semibold">CONTRAST:</span>
+                    <span className="text-ink font-bold">4.5:1 (AA) / 7.0:1 (AAA)</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="uppercase font-semibold">HARMONY:</span>
+                    <span className="text-ink font-bold">SPATIAL QUANTIZATION</span>
+                  </div>
+                </div>
               </div>
 
               <div className="pt-4 border-t border-ink/20 group-hover:border-ink/40 font-mono text-xs text-muted flex items-center justify-between transition-colors">
-                <span>WCAG 2.2 AA & AAA</span>
+                <span className="text-[11px] font-medium">WCAG 2.2 AA & AAA</span>
                 <span className="font-bold text-ink group-hover:text-white group-hover:bg-ink px-2.5 py-1 border border-ink/20 group-hover:border-ink flex items-center gap-1.5 transition-colors text-[11px] sm:text-xs uppercase tracking-wider">
                   <span>Calibrate tone</span>
                   <span className="group-hover:translate-x-0.5 transition-transform" aria-hidden="true">→</span>
@@ -743,18 +826,32 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                   onSelectSample(heroSample);
                 }
               }}
-              className="p-6 sm:p-8 lg:p-10 flex flex-col justify-between group hover:bg-white transition-colors cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-blue tactile-press"
+              style={{ '--step-idx': 2 } as React.CSSProperties}
+              className="workflow-step-card p-6 sm:p-8 lg:p-10 flex flex-col justify-between group hover:bg-white transition-colors cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-blue tactile-press"
               aria-label="Stage 03: Export your colors"
             >
               <div>
-                <div className="flex items-baseline justify-between border-b border-ink/20 group-hover:border-ink/40 pb-4 mb-6 transition-colors">
-                  <span className="font-display font-black text-6xl sm:text-7xl lg:text-8xl text-ink tracking-tighter leading-none group-hover:text-signal-red transition-colors select-none">
-                    03
+                {/* Architectural Folio Tag Strip */}
+                <div className="flex items-center justify-between font-mono text-[10px] sm:text-xs uppercase tracking-widest text-muted border-b border-ink/20 pb-3 mb-6 transition-colors group-hover:border-ink/40">
+                  <span className="font-bold text-signal-red flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 bg-signal-red inline-block" aria-hidden="true" />
+                    <span>STAGE // OUTPUT</span>
                   </span>
-                  <span className="font-mono text-[10px] sm:text-xs font-bold px-2 py-0.5 border border-signal-red/30 text-signal-red group-hover:border-signal-red group-hover:bg-signal-red group-hover:text-white tracking-widest uppercase transition-colors">
-                    STAGE // OUTPUT
+                  <span className="text-ink font-semibold">03 / 03</span>
+                </div>
+
+                <div className="flex items-baseline justify-between mb-4">
+                  <span className="editorial-mask block">
+                    <span className="font-display font-black text-6xl sm:text-7xl lg:text-8xl text-ink tracking-tighter leading-none group-hover:text-signal-red transition-colors select-none workflow-num-reveal">
+                      03
+                    </span>
+                  </span>
+                  <span className="font-mono text-[10px] px-2 py-0.5 border border-ink/20 bg-paper/60 text-muted uppercase font-bold tracking-wider group-hover:bg-ink group-hover:text-acid-lime group-hover:border-ink transition-colors">
+                    DTCG / CSS
                   </span>
                 </div>
+
+                <div className="w-8 h-0.5 bg-signal-red mb-5 group-hover:w-14 transition-all duration-standard" aria-hidden="true" />
 
                 <h3 className="font-display font-black text-2xl lg:text-3xl text-ink mb-3 group-hover:text-signal-red transition-colors">
                   Export your colors
@@ -763,10 +860,22 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                 <p className="font-body text-sm text-ink/75 leading-relaxed mb-6">
                   Generate production-ready CSS custom properties with channel variables, or export DTCG-compliant design token JSON ready for direct Figma/code handoff.
                 </p>
+
+                {/* Technical Ledger Strip */}
+                <div className="mb-6 p-3 bg-paper/60 border border-ink/15 group-hover:bg-white group-hover:border-ink/30 transition-colors font-mono text-[10px] text-muted space-y-1">
+                  <div className="flex items-center justify-between">
+                    <span className="uppercase font-semibold">CSS TOKENS:</span>
+                    <span className="text-ink font-bold">CUSTOM PROPERTIES</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="uppercase font-semibold">DESIGN TOKENS:</span>
+                    <span className="text-ink font-bold">W3C DTCG FORMAT</span>
+                  </div>
+                </div>
               </div>
 
               <div className="pt-4 border-t border-ink/20 group-hover:border-ink/40 font-mono text-xs text-muted flex items-center justify-between transition-colors">
-                <span>CSS & DTCG TOKENS</span>
+                <span className="text-[11px] font-medium">CSS & DTCG TOKENS</span>
                 <span className="font-bold text-ink group-hover:text-white group-hover:bg-ink px-2.5 py-1 border border-ink/20 group-hover:border-ink flex items-center gap-1.5 transition-colors text-[11px] sm:text-xs uppercase tracking-wider">
                   <span>Export tokens</span>
                   <span className="group-hover:translate-x-0.5 transition-transform" aria-hidden="true">→</span>
@@ -796,15 +905,17 @@ export const LandingPage: React.FC<LandingPageProps> = ({
           {/* Section Masthead */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-end pb-8 mb-12 border-b-2 border-ink">
             <div className="lg:col-span-8">
-              <div className="flex items-center gap-2.5 mb-3.5 font-mono text-xs uppercase tracking-widest text-signal-red font-bold">
+              <h2 className="font-display font-black text-3xl sm:text-4xl lg:text-5xl text-ink tracking-tight leading-[1.05]">
+                <span className="editorial-mask block">
+                  <span className="section-headline-reveal block">Tested against diverse imagery.</span>
+                </span>
+              </h2>
+            </div>
+            <div className="lg:col-span-4 lg:text-right flex flex-col justify-between items-start lg:items-end">
+              <div className="font-mono text-xs text-signal-red font-bold uppercase tracking-widest flex items-center gap-2 mb-2">
                 <span className="w-2 h-2 bg-signal-red inline-block flex-shrink-0" aria-hidden="true" />
                 <span>§ 04 // CURATED STUDIES</span>
               </div>
-              <h2 className="font-display font-black text-3xl sm:text-4xl lg:text-5xl text-ink tracking-tight leading-[1.05] pt-0.5">
-                Tested against diverse imagery.
-              </h2>
-            </div>
-            <div className="lg:col-span-4 lg:text-right">
               <p className="font-body text-sm sm:text-base text-ink/75 leading-relaxed">
                 Explore how Afterimage handles contrasting architectural forms, delicate organic textures, and natural landscape gradients.
               </p>
@@ -828,7 +939,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                       onSelectSample(SAMPLE_IMAGES[0]);
                     }
                   }}
-                  className="lg:col-span-8 flex flex-col justify-between border-2 border-ink bg-white group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-blue tactile-press select-none text-left"
+                  style={{ '--card-idx': 0 } as React.CSSProperties}
+                  className="lg:col-span-8 flex flex-col justify-between border-2 border-ink bg-white group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-blue tactile-press select-none text-left study-card-reveal"
                   aria-label={`Open Study 01: ${SAMPLE_IMAGES[0].title} in workspace`}
                 >
                   <div className="px-4 py-3 border-b-2 border-ink flex items-center justify-between font-mono text-xs bg-paper/40 group-hover:bg-paper transition-colors">
@@ -878,7 +990,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                             />
                             <div className="font-mono text-[10px] font-bold text-ink truncate text-center">
                               {isCopied ? (
-                                <span className="bg-ink text-acid-lime px-1 py-0.5 inline-block text-[9px]">COPIED</span>
+                                <span className="bg-ink text-acid-lime px-1 py-0.5 inline-block text-[9px] animate-copy-pop">COPIED</span>
                               ) : (
                                 swatch.hex
                               )}
@@ -913,7 +1025,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                       onSelectSample(SAMPLE_IMAGES[1]);
                     }
                   }}
-                  className="lg:col-span-4 flex flex-col justify-between border-2 border-ink bg-white group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-blue tactile-press select-none text-left"
+                  style={{ '--card-idx': 1 } as React.CSSProperties}
+                  className="lg:col-span-4 flex flex-col justify-between border-2 border-ink bg-white group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-blue tactile-press select-none text-left study-card-reveal"
                   aria-label={`Open Study 02: ${SAMPLE_IMAGES[1].title} in workspace`}
                 >
                   <div className="px-4 py-3 border-b-2 border-ink flex items-center justify-between font-mono text-xs bg-ink text-white group-hover:bg-ink/90 transition-colors">
@@ -992,7 +1105,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                     onSelectSample(SAMPLE_IMAGES[2]);
                   }
                 }}
-                className="w-full border-2 border-ink bg-white group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-blue tactile-press select-none text-left"
+                style={{ '--card-idx': 2 } as React.CSSProperties}
+                className="w-full border-2 border-ink bg-white group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-blue tactile-press select-none text-left study-card-reveal"
                 aria-label={`Open Study 03: ${SAMPLE_IMAGES[2].title} in workspace`}
               >
                 <div className="px-4 py-3 border-b-2 border-ink flex items-center justify-between font-mono text-xs bg-paper/40 group-hover:bg-paper transition-colors">
@@ -1081,7 +1195,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
       <section
         id="workspace-launch"
         ref={ctaRef}
-        className={`bg-paper border-b-2 border-ink scroll-reveal-container scroll-mt-20 ${
+        className={`bg-ink text-paper border-b-2 border-ink scroll-reveal-container scroll-mt-20 ${
           isCtaRevealed ? 'is-revealed' : ''
         }`}
       >
@@ -1094,23 +1208,29 @@ export const LandingPage: React.FC<LandingPageProps> = ({
             {/* Left 8 Cols: Monumental Brutalist Manifesto Statement */}
             <div className="lg:col-span-8 flex flex-col justify-between">
               <div className="space-y-4 sm:space-y-6">
-                <div className="flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-signal-red font-bold">
-                  <span className="w-2 h-2 bg-signal-red inline-block flex-shrink-0" aria-hidden="true" />
-                  <span>§ 05 // PRODUCTION DISPATCH</span>
+                <div className="flex items-center justify-between border-b border-white/20 pb-3 mb-2 font-mono text-xs text-signal-red font-bold uppercase tracking-widest">
+                  <span className="flex items-center gap-2">
+                    <span className="w-2 h-2 bg-signal-red inline-block flex-shrink-0" aria-hidden="true" />
+                    <span>§ 05 // PRODUCTION DISPATCH</span>
+                  </span>
+                  <span className="text-paper/50 font-normal text-[10px] hidden sm:inline">TERMINAL // LOCAL RUNTIME</span>
                 </div>
 
-                <h2 className="font-display font-black text-4xl sm:text-6xl lg:text-[4.6rem] xl:text-[5.4rem] text-ink tracking-tight leading-[0.92] uppercase pt-1">
-                  Bring an image.
-                  <br />
-                  <span className="text-signal-red">Leave with a palette.</span>
+                <h2 className="font-display font-black text-4xl sm:text-6xl lg:text-[4.6rem] xl:text-[5.4rem] tracking-tight leading-[0.92] uppercase">
+                  <span className="editorial-mask block">
+                    <span className="cta-headline-reveal block text-paper">Bring an image.</span>
+                  </span>
+                  <span className="editorial-mask block mt-1">
+                    <span className="cta-headline-reveal block text-signal-red">Leave with a palette.</span>
+                  </span>
                 </h2>
 
-                <p className="font-body text-base sm:text-lg text-ink/75 leading-relaxed max-w-xl">
+                <p className="font-body text-base sm:text-lg text-paper/80 leading-relaxed max-w-xl">
                   Fast, client-side, and distraction-free. No account, no cookie trackers, and zero server upload required.
                 </p>
               </div>
 
-              <div className="pt-8 border-t-2 border-ink font-mono text-xs text-muted flex flex-wrap items-center gap-x-6 gap-y-2">
+              <div className="pt-8 border-t-2 border-white/20 font-mono text-xs text-paper/70 flex flex-wrap items-center gap-x-6 gap-y-2">
                 <span className="flex items-center gap-2">
                   <span className="w-1.5 h-1.5 bg-signal-red inline-block" aria-hidden="true" />
                   <span>OFFSCREEN SAMPLING</span>
@@ -1127,17 +1247,20 @@ export const LandingPage: React.FC<LandingPageProps> = ({
             </div>
 
             {/* Right 4 Cols: Architectural Solid Action Pillar */}
-            <div className="lg:col-span-4 border-2 border-ink bg-white flex flex-col justify-between">
+            <div className="lg:col-span-4 border-2 border-paper bg-paper text-ink flex flex-col justify-between cta-border-reveal">
               <div>
-                <div className="px-5 py-3.5 bg-paper/60 border-b-2 border-ink flex items-center justify-between font-mono text-xs">
-                  <span className="font-bold text-ink uppercase tracking-wider">Direct Workspace Access</span>
-                  <span className="font-bold text-signal-red text-[11px]">LOCAL SESSION</span>
+                <div className="px-5 py-3.5 bg-ink text-paper border-b-2 border-ink flex items-center justify-between font-mono text-xs">
+                  <span className="font-bold uppercase tracking-wider">Direct Workspace Access</span>
+                  <span className="font-bold text-acid-lime text-[11px] flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 bg-acid-lime rounded-full" aria-hidden="true" />
+                    LOCAL SESSION
+                  </span>
                 </div>
                 <div className="p-6 sm:p-7">
                   <div className="font-display font-bold text-2xl text-ink mb-2">
                     Launch Local Instrument
                   </div>
-                  <p className="font-body text-xs text-ink/70 leading-relaxed">
+                  <p className="font-body text-xs text-ink/75 leading-relaxed">
                     Offscreen spatial quantization runs immediately in your active browser session.
                   </p>
                 </div>
@@ -1175,21 +1298,111 @@ export const LandingPage: React.FC<LandingPageProps> = ({
       </section>
 
       {/* ═══════════════════════════════════════════════════════════
-          FOOTER — BRUTALIST ARCHITECTURAL BASELINE
+          FOOTER — BRUTALIST ARCHITECTURAL BASELINE & COLOPHON
           ═══════════════════════════════════════════════════════════ */}
-      <footer className="mt-auto border-t-2 border-ink bg-white">
+      <footer className="mt-auto border-t-2 border-white/20 bg-ink text-paper font-mono">
         <div
-          className="mx-auto max-w-content py-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-mono text-muted"
+          className="mx-auto max-w-content py-10 sm:py-12 flex flex-col gap-8 text-xs text-paper/70"
           style={{ padding: 'var(--page-gutter)' }}
         >
-          <div className="flex items-center gap-3">
-            <span className="font-display font-black text-ink text-sm tracking-tight">AFTERIMAGE</span>
-            <span className="border-l-2 border-ink pl-3 font-semibold text-ink">VOL. 03 // 2026</span>
+          {/* Tier 1: Brand & Primary Navigation Ledger */}
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-white/10">
+            {/* Brand Definition */}
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+              <BrandLogo size={22} variant="dark" badgeText="v1.0" />
+              <span className="text-[11px] text-paper/50 tracking-wider uppercase font-semibold sm:border-l sm:border-white/20 sm:pl-3">
+                Image-to-Palette Color Instrument
+              </span>
+            </div>
+
+            {/* Product & Legal Navigation Cluster */}
+            <nav
+              className="flex flex-wrap items-center gap-x-6 gap-y-2.5 text-paper/80 text-[11px] uppercase tracking-wider font-bold"
+              aria-label="Footer Navigation"
+            >
+              <a
+                href="#how-it-works"
+                onClick={(e) => {
+                  const target = document.getElementById('how-it-works');
+                  if (target) {
+                    e.preventDefault();
+                    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+                    target.scrollIntoView({ behavior: prefersReducedMotion ? 'auto' : 'smooth' });
+                  }
+                }}
+                className="hover:text-acid-lime transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-acid-lime py-1"
+              >
+                How It Works
+              </a>
+              <button
+                type="button"
+                onClick={onOpenWorkspace}
+                className="hover:text-acid-lime transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-acid-lime py-1"
+              >
+                Workspace
+              </button>
+              <button
+                type="button"
+                onClick={onOpenPrivacy}
+                className="hover:text-acid-lime transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-acid-lime py-1"
+              >
+                Privacy Policy
+              </button>
+              <button
+                type="button"
+                onClick={onOpenTerms}
+                className="hover:text-acid-lime transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-acid-lime py-1"
+              >
+                Terms & Conditions
+              </button>
+            </nav>
           </div>
 
-          <span className="text-center sm:text-right font-medium">
-            Local browser quantization • Zero external network transmission
-          </span>
+          {/* Tier 2: Privacy Specification & Secondary Creator Credit Colophon */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-[11px] text-paper/60">
+            {/* Accurate Privacy Commitment */}
+            <div className="flex items-center gap-2">
+              <span className="w-1.5 h-1.5 bg-success inline-block flex-shrink-0" aria-hidden="true" />
+              <span>Local In-Browser Processing • Zero Image Uploads</span>
+            </div>
+
+            {/* Creator Identity & Accessible Social Links */}
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-paper/70">
+              <span className="text-paper/90">Designed &amp; built by Prashant.</span>
+              <span className="text-paper/30 hidden sm:inline" aria-hidden="true">•</span>
+              <div className="flex items-center gap-2.5 font-semibold">
+                <a
+                  href="https://github.com/Prashantsays69"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-acid-lime hover:underline underline-offset-2 transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-acid-lime"
+                  aria-label="Prashant on GitHub (opens in a new tab)"
+                >
+                  GitHub
+                </a>
+                <span className="text-paper/30" aria-hidden="true">/</span>
+                <a
+                  href="https://www.linkedin.com/in/prashant-ratnala"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-acid-lime hover:underline underline-offset-2 transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-acid-lime"
+                  aria-label="Prashant on LinkedIn (opens in a new tab)"
+                >
+                  LinkedIn
+                </a>
+                <span className="text-paper/30" aria-hidden="true">/</span>
+                <a
+                  href="https://instagram.com/iam_prash99"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-acid-lime hover:underline underline-offset-2 transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-acid-lime"
+                  aria-label="Prashant on Instagram (opens in a new tab)"
+                >
+                  Instagram
+                </a>
+              </div>
+            </div>
+          </div>
         </div>
       </footer>
     </div>

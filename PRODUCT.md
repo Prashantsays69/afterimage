@@ -34,6 +34,12 @@ In-browser web application (optimized for desktop and fully responsive on mobile
 - Export to CSS custom properties and JSON design tokens with clipboard and download support.
 - Full keyboard shortcuts support (`?` modal, tab-accessible controls, skip-to-content).
 
+### Interaction & Functional State Expectations
+- **Image upload & dropzone:** Immediate drag-over feedback (Acid Lime border and tint) and deterministic client-side validation; high-contrast inline error display for unsupported or corrupted files.
+- **Extraction & processing:** Live screen-reader status announcements during computation with a lightweight, non-blocking spinner; zero synthetic delays—swatches appear instantaneously when analysis finishes.
+- **Clipboard feedback:** 1-click HEX and token copying with temporary visual confirmation badge (1800ms) and polite `aria-live="polite"` screen-reader announcement.
+- **Export actions:** Synchronous modal presentation with live token preview; direct download triggers without server round-trips or artificial waiting.
+
 ### Technical & Architectural Constraints
 - Purely client-side execution: no server-side image processing, external database, or tracking.
 - SPA stack: React 18, TypeScript, Vite, Tailwind CSS.

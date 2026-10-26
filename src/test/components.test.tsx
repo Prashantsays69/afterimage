@@ -8,9 +8,12 @@ import { ImageCanvas } from '../components/ImageCanvas';
 import { HeroSpecimen } from '../components/HeroArtworkCard';
 import { LandingPage } from '../components/LandingPage';
 import { Workspace } from '../components/Workspace';
+import { PrivacyPolicy } from '../components/PrivacyPolicy';
+import { TermsAndConditions } from '../components/TermsAndConditions';
 import { SAMPLE_IMAGES } from '../data/samples';
 import { createColorSwatch } from '../utils/color';
 import { validateImageFile } from '../utils/extractor';
+import { useScrollReveal } from '../hooks/useScrollReveal';
 
 describe('Component & Interaction Tests', () => {
   const samplePalette = [
@@ -359,4 +362,481 @@ describe('Component & Interaction Tests', () => {
     fireEvent.keyDown(window, { key: 'Escape' });
     expect(setIsExportOpen).toHaveBeenCalledWith(false);
   });
+
+  it('renders hero with coordinated entrance choreography classes for editorial sequencing', () => {
+    const onOpen = vi.fn();
+    const onSelect = vi.fn();
+
+    const { container } = render(
+      <LandingPage
+        onOpenWorkspace={onOpen}
+        onSelectSample={onSelect}
+      />
+    );
+
+    // Verify eyebrow animation class
+    expect(container.querySelector('.animate-hero-eyebrow')).toBeInTheDocument();
+
+    // Verify specimen folio index ledger entrance class
+    expect(container.querySelector('.animate-hero-specimen-index')).toBeInTheDocument();
+
+    // Verify headline lines 1, 2, and 3 letterbox unmasking classes and editorial masks
+    expect(container.querySelector('.animate-hero-headline-1')).toBeInTheDocument();
+    expect(container.querySelector('.animate-hero-headline-2')).toBeInTheDocument();
+    expect(container.querySelector('.animate-hero-headline-3')).toBeInTheDocument();
+    expect(container.querySelector('.hero-unmask-line-1')).toBeInTheDocument();
+    expect(container.querySelector('.hero-unmask-line-2')).toBeInTheDocument();
+    expect(container.querySelector('.hero-unmask-line-3')).toBeInTheDocument();
+    expect(container.querySelectorAll('.editorial-mask').length).toBeGreaterThan(0);
+
+    // Verify supporting copy entrance animation class
+    expect(container.querySelector('.animate-hero-support')).toBeInTheDocument();
+
+    // Verify action ledger entrance animation class
+    expect(container.querySelector('.animate-hero-actions')).toBeInTheDocument();
+
+    // Verify hero artwork specimen animation class
+    expect(container.querySelector('.animate-hero-artwork')).toBeInTheDocument();
+  });
+
+  it('respects prefers-reduced-motion media query by disabling interactive tilt on hero specimen', () => {
+    // Mock matchMedia to simulate prefers-reduced-motion: reduce
+    const originalMatchMedia = window.matchMedia;
+    window.matchMedia = vi.fn().mockImplementation((query: string) => ({
+      matches: query.includes('prefers-reduced-motion'),
+      media: query,
+      onchange: null,
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      dispatchEvent: vi.fn(),
+    }));
+
+    const onSelect = vi.fn();
+    const { container } = render(
+      <HeroSpecimen
+        sample={SAMPLE_IMAGES[0]}
+        onSelectSample={onSelect}
+      />
+    );
+
+    // Specimen container should render without dynamic interactive tilt transforms
+    const specimen = container.querySelector('.hero-specimen');
+    expect(specimen).toBeInTheDocument();
+    expect(specimen).not.toHaveStyle('transform: rotateX(var(--tilt-rx, 0deg)) rotateY(var(--tilt-ry, 0deg))');
+
+    // Restore original matchMedia
+    window.matchMedia = originalMatchMedia;
+  });
+
+  it('reveals elements visible on mount immediately with useScrollReveal', () => {
+    const originalGetBoundingClientRect = Element.prototype.getBoundingClientRect;
+    Element.prototype.getBoundingClientRect = vi.fn().mockReturnValue({
+      top: 100,
+      bottom: 400,
+      left: 0,
+      right: 800,
+      width: 800,
+      height: 300,
+    });
+
+    const MountComponent = () => {
+      const { ref, isRevealed } = useScrollReveal();
+      return (
+        <div ref={ref} data-testid="mount-target" className={isRevealed ? 'is-revealed' : ''}>
+          In View on Mount
+        </div>
+      );
+    };
+
+    render(<MountComponent />);
+    const target = screen.getByTestId('mount-target');
+    expect(target).toHaveClass('is-revealed');
+
+    Element.prototype.getBoundingClientRect = originalGetBoundingClientRect;
+  });
+
+  it('keeps below-the-fold sections unrevealed until scrolled into view with useScrollReveal', () => {
+    const originalGetBoundingClientRect = Element.prototype.getBoundingClientRect;
+    // Mock getBoundingClientRect to place element below the fold
+    Element.prototype.getBoundingClientRect = vi.fn().mockReturnValue({
+      top: 1500,
+      bottom: 2500,
+      left: 0,
+      right: 800,
+      width: 800,
+      height: 1000,
+    });
+
+    const BelowFoldComponent = () => {
+      const { ref, isRevealed } = useScrollReveal();
+      return (
+        <div ref={ref} data-testid="below-fold-target" className={isRevealed ? 'is-revealed' : ''}>
+          Below the Fold Content
+        </div>
+      );
+    };
+
+    render(<BelowFoldComponent />);
+    const target = screen.getByTestId('below-fold-target');
+    // Initially unrevealed while below the fold
+    expect(target).not.toHaveClass('is-revealed');
+
+    // Simulate scrolling into view
+    Element.prototype.getBoundingClientRect = vi.fn().mockReturnValue({
+      top: 400,
+      bottom: 1400,
+      left: 0,
+      right: 800,
+      width: 800,
+      height: 1000,
+    });
+
+    fireEvent.scroll(window);
+    expect(target).toHaveClass('is-revealed');
+
+    Element.prototype.getBoundingClientRect = originalGetBoundingClientRect;
+  });
+
+  it('recovers gracefully when IntersectionObserver is unsupported or throws', () => {
+    const originalGetBoundingClientRect = Element.prototype.getBoundingClientRect;
+    Element.prototype.getBoundingClientRect = vi.fn().mockReturnValue({
+      top: 100,
+      bottom: 400,
+      left: 0,
+      right: 800,
+      width: 800,
+      height: 300,
+    });
+
+    const originalIO = window.IntersectionObserver;
+    // Simulate throwing IntersectionObserver
+    window.IntersectionObserver = vi.fn().mockImplementation(() => {
+      throw new Error('Observer failure');
+    }) as unknown as typeof IntersectionObserver;
+
+    const ObserverErrorComponent = () => {
+      const { ref, isRevealed } = useScrollReveal();
+      return (
+        <div ref={ref} data-testid="observer-err-target" className={isRevealed ? 'is-revealed' : ''}>
+          Resilient Content on Error
+        </div>
+      );
+    };
+
+    render(<ObserverErrorComponent />);
+    const target = screen.getByTestId('observer-err-target');
+    expect(target).toHaveClass('is-revealed');
+
+    window.IntersectionObserver = originalIO;
+    Element.prototype.getBoundingClientRect = originalGetBoundingClientRect;
+  });
+
+  it('replays scroll entrance bidirectionally when scrolling past and returning', () => {
+    const originalGetBoundingClientRect = Element.prototype.getBoundingClientRect;
+    let currentRect = {
+      top: 100,
+      bottom: 400,
+      left: 0,
+      right: 800,
+      width: 800,
+      height: 300,
+    };
+    Element.prototype.getBoundingClientRect = vi.fn().mockImplementation(() => currentRect);
+
+    const RepeatableComponent = () => {
+      const { ref, isRevealed } = useScrollReveal();
+      return (
+        <div ref={ref} data-testid="repeatable-target" className={isRevealed ? 'is-revealed' : ''}>
+          Repeatable Section Content
+        </div>
+      );
+    };
+
+    render(<RepeatableComponent />);
+    const target = screen.getByTestId('repeatable-target');
+
+    // 1. Initially in view
+    expect(target).toHaveClass('is-revealed');
+
+    // 2. User scrolls way down, element scrolls completely above viewport past -20px hysteresis buffer
+    currentRect = {
+      top: -600,
+      bottom: -100,
+      left: 0,
+      right: 800,
+      width: 800,
+      height: 300,
+    };
+    fireEvent.scroll(window);
+    expect(target).not.toHaveClass('is-revealed');
+
+    // 3. User scrolls back up, element re-enters viewport
+    currentRect = {
+      top: 150,
+      bottom: 450,
+      left: 0,
+      right: 800,
+      width: 800,
+      height: 300,
+    };
+    fireEvent.scroll(window);
+    expect(target).toHaveClass('is-revealed');
+
+    // 4. User scrolls way up, element scrolls completely below viewport past innerHeight + 20px
+    currentRect = {
+      top: 1500,
+      bottom: 1800,
+      left: 0,
+      right: 800,
+      width: 800,
+      height: 300,
+    };
+    fireEvent.scroll(window);
+    expect(target).not.toHaveClass('is-revealed');
+
+    // 5. User scrolls back down, element re-enters viewport again
+    currentRect = {
+      top: 200,
+      bottom: 500,
+      left: 0,
+      right: 800,
+      width: 800,
+      height: 300,
+    };
+    fireEvent.scroll(window);
+    expect(target).toHaveClass('is-revealed');
+
+    Element.prototype.getBoundingClientRect = originalGetBoundingClientRect;
+  });
+
+  it('prevents boundary flicker when element rests near viewport edge due to hysteresis buffer', () => {
+    const originalGetBoundingClientRect = Element.prototype.getBoundingClientRect;
+    let currentRect = {
+      top: 100,
+      bottom: 400,
+      left: 0,
+      right: 800,
+      width: 800,
+      height: 300,
+    };
+    Element.prototype.getBoundingClientRect = vi.fn().mockImplementation(() => currentRect);
+
+    const HysteresisComponent = () => {
+      const { ref, isRevealed } = useScrollReveal();
+      return (
+        <div ref={ref} data-testid="hysteresis-target" className={isRevealed ? 'is-revealed' : ''}>
+          Hysteresis Content
+        </div>
+      );
+    };
+
+    render(<HysteresisComponent />);
+    const target = screen.getByTestId('hysteresis-target');
+    expect(target).toHaveClass('is-revealed');
+
+    // Element edge sits right at -5px (barely outside, but within the 20px safety buffer)
+    currentRect = {
+      top: -305,
+      bottom: -5,
+      left: 0,
+      right: 800,
+      width: 800,
+      height: 300,
+    };
+    fireEvent.scroll(window);
+    // Should NOT reset to avoid jitter/flicker
+    expect(target).toHaveClass('is-revealed');
+
+    Element.prototype.getBoundingClientRect = originalGetBoundingClientRect;
+  });
+
+  it('renders distinct section choreography elements across LandingPage', () => {
+    const onOpen = vi.fn();
+    const onSelect = vi.fn();
+
+    const { container } = render(
+      <LandingPage
+        onOpenWorkspace={onOpen}
+        onSelectSample={onSelect}
+      />
+    );
+
+    // Section 02 architectural rule draw
+    expect(container.querySelector('.scroll-reveal-rule')).toBeInTheDocument();
+
+    // Section 02 spectrum columns with directional ink-wipe reveal
+    const spectrumColumns = container.querySelectorAll('.spectrum-column-reveal');
+    expect(spectrumColumns.length).toBeGreaterThan(0);
+
+    // Section 03 3-stage workflow sequential cascade and monumental numeral clipped slide
+    const stepCards = container.querySelectorAll('.workflow-step-card');
+    expect(stepCards.length).toBe(3);
+    const stepNums = container.querySelectorAll('.workflow-num-reveal');
+    expect(stepNums.length).toBe(3);
+
+    // Section 04 curated studies card entrances
+    const studyCards = container.querySelectorAll('.study-card-reveal');
+    expect(studyCards.length).toBe(3);
+
+    // Section 05 CTA manifesto headline clipped reveals and border crisping
+    const ctaHeadlines = container.querySelectorAll('.cta-headline-reveal');
+    expect(ctaHeadlines.length).toBe(2);
+    expect(container.querySelector('.cta-border-reveal')).toBeInTheDocument();
+  });
+
+  it('renders PaletteStrip swatches with animate-swatch-entrance and supports copy micro-badge pop', async () => {
+    const onSelect = vi.fn();
+    const onReorder = vi.fn();
+    const onAdd = vi.fn();
+    const onRemove = vi.fn();
+    const onRegen = vi.fn();
+
+    const originalClipboard = navigator.clipboard;
+    Object.assign(navigator, {
+      clipboard: {
+        writeText: vi.fn().mockResolvedValue(undefined),
+      },
+    });
+
+    const { container } = render(
+      <PaletteStrip
+        palette={samplePalette}
+        selectedId="s1"
+        onSelectColor={onSelect}
+        onReorder={onReorder}
+        onAddColor={onAdd}
+        onRemoveColor={onRemove}
+        onRegenerate={onRegen}
+      />
+    );
+
+    // Swatches have entrance animation
+    const swatches = container.querySelectorAll('.animate-swatch-entrance');
+    expect(swatches.length).toBe(samplePalette.length);
+
+    // Copy HEX button
+    const copyButtons = screen.getAllByTitle('Copy HEX');
+    fireEvent.click(copyButtons[0]);
+
+    // Active micro-badge pop appears
+    const badge = await screen.findByText('COPIED');
+    expect(badge).toHaveClass('animate-copy-pop');
+
+    Object.assign(navigator, { clipboard: originalClipboard });
+  });
+
+  it('renders Inspector accordion headers with animated accordion-chevron rotation', () => {
+    const onUpdate = vi.fn();
+
+    const { container } = render(
+      <Inspector
+        palette={samplePalette}
+        selectedSwatch={samplePalette[0]}
+        onUpdateSwatch={onUpdate}
+      />
+    );
+
+    // Accordion chevrons are present
+    const chevrons = container.querySelectorAll('.accordion-chevron');
+    expect(chevrons.length).toBe(4);
+    // Uncollapsed sections have is-open class
+    expect(container.querySelector('.accordion-chevron.is-open')).toBeInTheDocument();
+  });
+
+  it('renders modals with animate-backdrop-fade for smooth entrance', () => {
+    const onClose = vi.fn();
+
+    const { container: exportContainer } = render(
+      <ExportModal palette={samplePalette} isOpen={true} onClose={onClose} />
+    );
+    expect(exportContainer.querySelector('.animate-backdrop-fade')).toBeInTheDocument();
+
+    const { container: shortcutsContainer } = render(
+      <ShortcutsModal isOpen={true} onClose={onClose} />
+    );
+    expect(shortcutsContainer.querySelector('.animate-backdrop-fade')).toBeInTheDocument();
+  });
+
+  it('renders PrivacyPolicy with accurate zero-server data statements and responds to navigation', () => {
+    const onHome = vi.fn();
+    const onWorkspace = vi.fn();
+
+    render(
+      <PrivacyPolicy
+        onNavigateHome={onHome}
+        onOpenWorkspace={onWorkspace}
+      />
+    );
+
+    // Verify key privacy commitments matching actual codebase behavior
+    expect(screen.getByRole('heading', { level: 1, name: /Privacy Policy/i })).toBeInTheDocument();
+    expect(screen.getByText(/Zero Server Uploads & Network Transmission/i)).toBeInTheDocument();
+    expect(screen.getByText(/In-Memory Browser Canvas Execution/i)).toBeInTheDocument();
+    expect(screen.getByText(/Zero advertising or tracking cookies/i)).toBeInTheDocument();
+
+    // Verify action buttons
+    const backBtn = screen.getByRole('button', { name: /Back to Overview/i });
+    fireEvent.click(backBtn);
+    expect(onHome).toHaveBeenCalled();
+
+    const workspaceBtn = screen.getByRole('button', { name: /Launch Workspace/i });
+    fireEvent.click(workspaceBtn);
+    expect(onWorkspace).toHaveBeenCalled();
+  });
+
+  it('renders TermsAndConditions with accurate token ownership rights and responds to navigation', () => {
+    const onHome = vi.fn();
+    const onWorkspace = vi.fn();
+
+    render(
+      <TermsAndConditions
+        onNavigateHome={onHome}
+        onOpenWorkspace={onWorkspace}
+      />
+    );
+
+    // Verify core terms matching actual product behavior
+    expect(screen.getByRole('heading', { level: 1, name: /Terms & Conditions/i })).toBeInTheDocument();
+    expect(screen.getByText(/Token Ownership & Commercial Rights/i)).toBeInTheDocument();
+    expect(screen.getByText(/Free for personal, commercial, open-source, and enterprise projects/i)).toBeInTheDocument();
+    expect(screen.getByText(/No Account Requirements/i)).toBeInTheDocument();
+
+    // Verify action buttons
+    const backBtn = screen.getByRole('button', { name: /Back to Overview/i });
+    fireEvent.click(backBtn);
+    expect(onHome).toHaveBeenCalled();
+
+    const workspaceBtn = screen.getByRole('button', { name: /Launch Workspace/i });
+    fireEvent.click(workspaceBtn);
+    expect(onWorkspace).toHaveBeenCalled();
+  });
+
+  it('renders LandingPage footer with working navigation, privacy policy, and terms links', () => {
+    const onOpenWorkspace = vi.fn();
+    const onSelect = vi.fn();
+    const onPrivacy = vi.fn();
+    const onTerms = vi.fn();
+
+    render(
+      <LandingPage
+        onOpenWorkspace={onOpenWorkspace}
+        onSelectSample={onSelect}
+        onOpenPrivacy={onPrivacy}
+        onOpenTerms={onTerms}
+      />
+    );
+
+    // Verify footer links are present and clickable
+    const privacyBtn = screen.getByRole('button', { name: /Privacy Policy/i });
+    fireEvent.click(privacyBtn);
+    expect(onPrivacy).toHaveBeenCalled();
+
+    const termsBtn = screen.getByRole('button', { name: /Terms & Conditions/i });
+    fireEvent.click(termsBtn);
+    expect(onTerms).toHaveBeenCalled();
+  });
 });
+
+

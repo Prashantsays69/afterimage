@@ -215,21 +215,29 @@ export const Workspace: React.FC<WorkspaceProps> = ({
     <main className="min-h-[calc(100vh-72px)] bg-paper p-4 md:p-6 lg:p-8">
       <div className="max-w-content mx-auto">
         {/* Workspace Sub-header Breadcrumb */}
-        <div className="flex items-center justify-between pb-4 mb-4 border-b border-rule">
+        <div className="flex flex-wrap items-center justify-between gap-2 pb-3.5 mb-6 border-b-2 border-ink">
           <div className="flex items-center gap-2 text-xs font-mono">
             <button
               type="button"
               onClick={onNavigateHome}
-              className="text-muted hover:text-ink transition-colors duration-fast"
+              className="text-muted hover:text-ink font-bold transition-colors duration-fast uppercase"
             >
               Afterimage
             </button>
-            <span className="text-rule">/</span>
-            <span className="text-ink font-semibold">Workspace</span>
+            <span className="text-ink font-bold">/</span>
+            <span className="text-ink font-bold uppercase tracking-wider flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 bg-signal-red inline-block" aria-hidden="true" />
+              Workspace
+            </span>
           </div>
-          <span className="text-xs font-mono text-muted">
-            {imageMeta ? `${imageMeta.name} (${palette.length} colors)` : 'Awaiting image input'}
-          </span>
+          <div className="flex items-center gap-3 font-mono text-xs">
+            <span className="hidden sm:inline-block px-2 py-0.5 border-2 border-ink bg-white font-bold text-[10px] uppercase text-ink">
+              LOCAL RUNTIME // CLIENT-SIDE
+            </span>
+            <span className="font-mono text-xs text-ink font-bold">
+              {imageMeta ? `${imageMeta.name} (${palette.length} colors)` : 'Awaiting image input'}
+            </span>
+          </div>
         </div>
 
         {/* 12-Column Canvas-First Workspace Grid */}

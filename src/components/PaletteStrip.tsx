@@ -34,21 +34,21 @@ export const PaletteStrip: React.FC<PaletteStripProps> = ({
   const selectedIndex = palette.findIndex((s) => s.id === selectedId);
 
   return (
-    <section className="bg-white border border-rule mt-4 p-4 md:p-6" aria-label="Extracted color palette">
+    <section className="bg-white border-2 border-ink mt-4 p-4 md:p-6" aria-label="Extracted color palette">
       {/* Palette Toolbar */}
-      <div className="flex flex-wrap items-center justify-between gap-3 pb-4 mb-4 border-b border-rule">
+      <div className="flex flex-wrap items-center justify-between gap-3 pb-4 mb-4 border-b-2 border-ink">
         <div className="flex items-center gap-3">
-          <h2 className="font-display font-semibold text-base md:text-lg text-ink">
+          <h2 className="font-display font-black text-base md:text-lg text-ink tracking-tight">
             Palette ({palette.length})
           </h2>
-          <span className="font-mono text-xs text-muted">
+          <span className="font-mono text-xs font-bold text-signal-red uppercase tracking-wider">
             {selectedIndex >= 0 ? `Selected #${selectedIndex + 1}` : 'Select a swatch'}
           </span>
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
           {/* Reorder controls for keyboard accessibility */}
-          <div className="flex items-center border border-rule" role="group" aria-label="Swatch order controls">
+          <div className="flex items-center border-2 border-ink bg-white" role="group" aria-label="Swatch order controls">
             <button
               type="button"
               onClick={() => selectedIndex > 0 && onReorder(selectedIndex, selectedIndex - 1)}
@@ -59,7 +59,7 @@ export const PaletteStrip: React.FC<PaletteStripProps> = ({
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
-            <span className="text-xs font-mono px-1.5 text-muted border-x border-rule select-none">Order</span>
+            <span className="text-xs font-mono font-bold px-2 text-ink border-x-2 border-ink select-none uppercase">Order</span>
             <button
               type="button"
               onClick={() => selectedIndex < palette.length - 1 && onReorder(selectedIndex, selectedIndex + 1)}
@@ -77,7 +77,7 @@ export const PaletteStrip: React.FC<PaletteStripProps> = ({
             type="button"
             onClick={onAddColor}
             disabled={palette.length >= 10}
-            className="tactile-press inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-mono uppercase bg-white border border-rule hover:border-ink disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-blue"
+            className="tactile-press inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold uppercase bg-white border-2 border-ink hover:bg-ink hover:text-white disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-blue transition-colors"
             title={palette.length >= 10 ? 'Maximum 10 colors reached' : 'Add custom swatch'}
           >
             <Plus className="w-3.5 h-3.5" />
@@ -89,7 +89,7 @@ export const PaletteStrip: React.FC<PaletteStripProps> = ({
             type="button"
             onClick={() => selectedId && onRemoveColor(selectedId)}
             disabled={palette.length <= 3}
-            className="tactile-press inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-mono uppercase bg-white border border-rule hover:border-error hover:text-error disabled:opacity-30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-error"
+            className="tactile-press inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold uppercase bg-white border-2 border-ink hover:bg-error hover:border-error hover:text-white disabled:opacity-30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-error transition-colors"
             title={palette.length <= 3 ? 'Minimum 3 colors required' : 'Remove selected color'}
           >
             <Trash2 className="w-3.5 h-3.5" />
@@ -101,7 +101,7 @@ export const PaletteStrip: React.FC<PaletteStripProps> = ({
             type="button"
             onClick={onRegenerate}
             disabled={isProcessing}
-            className="tactile-press inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-mono uppercase bg-white border border-rule hover:border-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-blue"
+            className="tactile-press inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold uppercase bg-white border-2 border-ink hover:bg-ink hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-blue transition-colors"
             title="Re-extract colors from active image"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${isProcessing ? 'animate-spin' : ''}`} />
@@ -112,7 +112,7 @@ export const PaletteStrip: React.FC<PaletteStripProps> = ({
           <button
             type="button"
             onClick={handleCopyAll}
-            className="tactile-press inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-mono uppercase bg-ink text-white border border-ink hover:bg-signal-red hover:border-signal-red focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-blue"
+            className="tactile-press inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold uppercase bg-ink text-white border-2 border-ink hover:bg-signal-red hover:border-signal-red focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-blue transition-colors"
           >
             {copiedText === 'ALL' ? (
               <>
@@ -152,10 +152,10 @@ export const PaletteStrip: React.FC<PaletteStripProps> = ({
                   onSelectColor(swatch.id);
                 }
               }}
-              className={`group relative flex flex-col cursor-pointer border select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-blue tactile-swatch ${
+              className={`group relative flex flex-col cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-blue tactile-swatch animate-swatch-entrance ${
                 isSelected
-                  ? 'border-ink ring-2 ring-ink ring-offset-2 ring-offset-white'
-                  : 'border-rule hover:border-ink'
+                  ? 'border-2 border-ink ring-2 ring-signal-red ring-offset-2 ring-offset-white'
+                  : 'border-2 border-ink/40 hover:border-ink'
               }`}
             >
               {/* Color Box */}
@@ -163,22 +163,29 @@ export const PaletteStrip: React.FC<PaletteStripProps> = ({
                 className="h-20 sm:h-24 md:h-28 w-full relative flex items-start justify-end p-2 transition-colors duration-fast"
                 style={{ backgroundColor: swatch.hex }}
               >
+                {/* Micro-badge pop when copied */}
+                {isCopied && (
+                  <div className="absolute top-2 left-2 bg-acid-lime text-ink text-[10px] font-mono font-bold px-1.5 py-0.5 tracking-wider uppercase border border-ink shadow-sm animate-copy-pop">
+                    COPIED
+                  </div>
+                )}
+
                 {/* Non-color Selected Indicator */}
                 {isSelected && (
-                  <div className="bg-ink text-white text-[10px] font-mono px-1.5 py-0.5 tracking-widest uppercase border border-white shadow-sm">
+                  <div className="bg-ink text-acid-lime text-[10px] font-mono font-bold px-1.5 py-0.5 tracking-widest uppercase border border-ink shadow-sm">
                     ACTIVE
                   </div>
                 )}
               </div>
 
               {/* Swatch Details */}
-              <div className="p-2.5 bg-paper flex items-center justify-between border-t border-rule group-hover:bg-white transition-colors duration-fast">
+              <div className="p-2.5 bg-paper flex items-center justify-between border-t-2 border-ink group-hover:bg-white transition-colors duration-fast">
                 <div>
-                  <div className="font-mono text-xs font-semibold text-ink tracking-wider">
+                  <div className="font-mono text-xs font-bold text-ink tracking-wider">
                     {swatch.hex}
                   </div>
-                  <div className="font-mono text-[10px] text-muted">
-                    {swatch.percentage ? `${swatch.percentage}%` : `#${index + 1}`}
+                  <div className="font-mono text-[10px] text-ink font-medium">
+                    {swatch.percentage ? `${swatch.percentage}% MASS` : `#${index + 1}`}
                   </div>
                 </div>
 
@@ -188,12 +195,12 @@ export const PaletteStrip: React.FC<PaletteStripProps> = ({
                     e.stopPropagation();
                     copy(swatch.hex);
                   }}
-                  className="tactile-press p-1 hover:bg-white text-muted hover:text-ink border border-transparent hover:border-rule focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-electric-blue"
+                  className="tactile-press p-1.5 bg-white border-2 border-ink/30 hover:border-ink hover:bg-ink hover:text-white text-ink focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-electric-blue transition-colors"
                   aria-label={`Copy color ${swatch.hex}`}
                   title="Copy HEX"
                 >
                   {isCopied ? (
-                    <Check className="w-3.5 h-3.5 text-success" />
+                    <Check className="w-3.5 h-3.5 text-success animate-copy-pop" />
                   ) : (
                     <Copy className="w-3.5 h-3.5" />
                   )}
